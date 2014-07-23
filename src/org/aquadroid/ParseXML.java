@@ -1,5 +1,4 @@
 package org.aquadroid;
-import java.io.File;
 import java.io.FileInputStream;
 
 import javax.xml.parsers.DocumentBuilder;

@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-//import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+//import android.app.Activity;
 
 public class Config {
 	private static final String TAG = "Config";
@@ -18,10 +18,15 @@ public class Config {
 	private int timecode;
 	private int timeslide;
 	private String work_directory = "/sdcard/AquaDROID/";
-	private String slide_directory = "slideshow";
+	private String image_directory = "slideshow_images";
+	private String video_directory = "slideshow_videos";
 	private String portcom = "/dev/s3c2410_serial0";
 	private int baudrate = 9600;
 	private int headcode = 1;
+	
+	private int enableSlideImages = 1;
+	private int enableSlideVideos = 1;
+	private int enablePhone = 1;
 	
 	public Config(Context context)
 	{
@@ -39,7 +44,8 @@ public class Config {
 		ParseXML px = new ParseXML(this.context, this.filename);
 		this.work_directory = px.getItem(root, "WorkingDirectory");
 		Log.i(TAG, "directory: " + this.work_directory);
-		this.slide_directory = px.getItem(root, "SlideDirectory");
+		this.image_directory = px.getItem(root, "ImageDirectory");
+		//this.video_directory = px.getItem(root, "VideoDirectory");
 		this.portcom = px.getItem(root, "PortCOM");
 		this.baudrate = Integer.parseInt(px.getItem(root, "BaudRate"));
 		this.headcode = Integer.parseInt(px.getItem(root, "HeadCode"));
@@ -48,6 +54,11 @@ public class Config {
 		this.serverport = Integer.parseInt(px.getItem(root, "ServerPort"));
 		this.timecode = Integer.parseInt(px.getItem(root, "TimeCode"));
 		this.timeslide = Integer.parseInt(px.getItem(root, "TimeSlide"));
+		
+		this.enableSlideImages = 0;//Integer.parseInt(px.getItem(root, "HeadCode"));
+		this.enableSlideVideos = 1;//Integer.parseInt(px.getItem(root, "HeadCode"));
+		this.enablePhone = 1;//Integer.parseInt(px.getItem(root, "HeadCode"));
+		
 	}
 	public String getServerIp()
 	{
@@ -69,9 +80,13 @@ public class Config {
 	{
 		return this.work_directory;
 	}
-	public String getSlideDirectory()
+	public String getImageDirectory()
 	{
-		return this.slide_directory;
+		return this.image_directory;
+	}
+	public String getVideoDirectory()
+	{
+		return this.video_directory;
 	}
 	public String getPortCOM()
 	{
@@ -85,6 +100,15 @@ public class Config {
 	{
 		return this.headcode;
 	}
+	public int getEnableSlideImages() {
+		return enableSlideImages;
+	}
+	public int getEnableSlideVideos() {
+		return enableSlideVideos;
+	}
+	public int getEnablePhone() {
+		return enablePhone;
+	}
 	private void CreateDefaultConfig()
 	{
 		try{
@@ -94,7 +118,8 @@ public class Config {
 			sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 			sb.append("<AquaDroid>\n");
 			sb.append("<WorkingDirectory>/sdcard/AquaDROID/</WorkingDirectory>");
-			sb.append("<SlideDirectory>slideshow/</SlideDirectory>");
+			sb.append("<ImageDirectory>slideshow_images/</ImageDirectory>");
+			sb.append("<VideoDirectory>slideshow_videos/</VideoDirectory>");
 			sb.append("<PortCOM>/dev/s3c2410_serial0</PortCOM>");
 			sb.append("<BaudRate>9600</BaudRate>");
 			sb.append("<HeadCode>1</HeadCode>");
@@ -102,6 +127,9 @@ public class Config {
 			sb.append("<ServerPort>1234</ServerPort>\n");
 			sb.append("<TimeCode>10</TimeCode>\n");
 			sb.append("<TimeSlide>15</TimeSlide>\n");
+			sb.append("<EnableSlideImages>1</EnableSlideImages>\n");
+			sb.append("<EnableSlideVideos>1</EnableSlideVideos>\n");
+			sb.append("<EnablePhone>1</EnablePhone>\n");
 			sb.append("</AquaDroid>");
 			
 			fos.write(sb.toString().getBytes());
