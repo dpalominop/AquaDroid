@@ -63,7 +63,6 @@ public class AquaDroid extends Activity {
 	private DisplayMetrics dm;
 	private SurfaceView sur_View;
 	private MediaController media_Controller;
-	private String VideoPath = "";
 
 	private String urls[];
 	private String[] list_images;
@@ -265,7 +264,8 @@ public class AquaDroid extends Activity {
 			case CATALOG_VIDEO:
 				stopSlideTimer();
 				if(total_videos > 0){
-					playVideo(VideoPath + "/"+list_videos[0]);
+					playVideo(list_videos[0]);
+					v++;
 				}
 				if(cfg.getEnableSlideImages()==1){
 					setAqState(STATE.CATALOG_PICTURE);
@@ -323,15 +323,15 @@ public class AquaDroid extends Activity {
     }
     
     public void playVideo(String video) {
-		media_Controller = new MediaController(this);
+		//media_Controller = new MediaController(this);
 		dm = new DisplayMetrics();
 		this.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		int height = dm.heightPixels;
 		int width = dm.widthPixels;
 		videoView.setMinimumWidth(width);
 		videoView.setMinimumHeight(height);
-		videoView.setMediaController(media_Controller);
-		videoView.setVideoPath(video);
+		//videoView.setMediaController(media_Controller);
+		videoView.setVideoPath(cfg.getWorkDirectory()+cfg.getVideoDirectory() + "/" + video);
 		videoView.start();
 	}
     
@@ -368,11 +368,9 @@ public class AquaDroid extends Activity {
         
         if(cfg.getEnableSlideVideos()==1){
         	List<String> slide = listFileVideosByExt(cfg.getWorkDirectory()+cfg.getVideoDirectory());
-        	Log.d("player", "video directory: "+cfg.getWorkDirectory()+cfg.getVideoDirectory());
 	        list_videos = (String[]) slide.toArray(new String[0]);
 	        total_videos = list_videos.length;
-	        VideoPath = cfg.getWorkDirectory()+cfg.getVideoDirectory();
-	        Log.d("player", "video path: " + VideoPath + "/" + list_videos[0]);
+
 	        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() 
 	        {           
 	            public void onCompletion(MediaPlayer mp) 
@@ -388,8 +386,9 @@ public class AquaDroid extends Activity {
 
 	                if (v > total_videos - 1) {
 	                    v = 0;
+	                    initSlideTimer(0, cfg.getTimeSlide());
 	                }else{
-	                	playVideo(VideoPath + "/" + list_videos[v]);
+	                	playVideo(list_videos[v]);
 	                	v++;
 	                }
 

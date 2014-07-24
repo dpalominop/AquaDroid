@@ -55,7 +55,7 @@ public class Config {
 		this.timecode = Integer.parseInt(px.getItem(root, "TimeCode"));
 		this.timeslide = Integer.parseInt(px.getItem(root, "TimeSlide"));
 		
-		this.enableSlideImages = 0;//Integer.parseInt(px.getItem(root, "HeadCode"));
+		this.enableSlideImages = 1;//Integer.parseInt(px.getItem(root, "HeadCode"));
 		this.enableSlideVideos = 1;//Integer.parseInt(px.getItem(root, "HeadCode"));
 		this.enablePhone = 1;//Integer.parseInt(px.getItem(root, "HeadCode"));
 		
