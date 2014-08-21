@@ -3,7 +3,7 @@
     android:id="@+id/SlideShow"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-
+	
     <ImageView
         android:id="@+id/welcome"
         android:layout_width="match_parent"
@@ -23,6 +23,19 @@
         android:id="@+id/web_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
+
+    <org.linphone.mediastream.video.display.GL2JNIView
+        android:id="@+id/video_surface"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="visible" />
+
+    <SurfaceView
+        android:id="@+id/video_capture_surface"
+        android:layout_width="72dip"
+        android:layout_height="88dip"
+        android:layout_marginBottom="15dip"
+        android:layout_marginRight="15dip" />
 
     <LinearLayout
         android:id="@+id/PanelAnexos"
@@ -127,7 +140,7 @@
     </LinearLayout>
     
     <Button
-        android:id="@+id/anexos"
+        android:id="@+id/MainButton"
         android:layout_width="181dp"
         android:layout_height="45dp"
         android:layout_gravity="bottom|right"

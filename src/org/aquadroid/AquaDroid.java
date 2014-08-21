@@ -30,10 +30,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -53,11 +55,22 @@ public class AquaDroid extends Activity {
 	private TimerTask MyTimerTask;
 	private int timeTableCaller = 10;
 	
-	private Button anexos;
+	private Button MainButton;
 	private ImageView welcome;
 	private ImageView imageView;
 	private VideoView videoView;
 	private LinearLayout PanelAnexos;
+	private Button Anexo1;
+	private Button Anexo2;
+	private Button Anexo3;
+	private Button Anexo4;
+	private Button Anexo5;
+	private Button Anexo6;
+	private Button Anexo7;
+	private Button Anexo8;
+	private GLSurfaceView video;
+	private SurfaceView capture;
+	private SoftphoneManager mManager;
 	
 	private DisplayMetrics dm;
 	//private SurfaceView sur_View;
@@ -108,13 +121,24 @@ public class AquaDroid extends Activity {
         cfg = new Config(ctx);
         Log.e(TAG,"slide path ="+cfg.getWorkDirectory()+cfg.getImageDirectory());
         
-        anexos = (Button) findViewById(R.id.anexos);
+        MainButton = (Button) findViewById(R.id.MainButton);
         welcome = (ImageView) findViewById(R.id.welcome);
         imageView = (ImageView) findViewById(R.id.image_view);
         videoView = (VideoView) findViewById(R.id.video_view);
         webView  = (WebView) findViewById(R.id.web_view);
         PanelAnexos = (LinearLayout) findViewById(R.id.PanelAnexos);
-        
+        Anexo1 = (Button) findViewById(R.id.anexo1);
+        Anexo2 = (Button) findViewById(R.id.anexo2);
+        Anexo3 = (Button) findViewById(R.id.anexo3);
+        Anexo4 = (Button) findViewById(R.id.anexo4);
+        Anexo5 = (Button) findViewById(R.id.anexo5);
+        Anexo6 = (Button) findViewById(R.id.anexo6);
+        Anexo7 = (Button) findViewById(R.id.anexo7);
+        Anexo8 = (Button) findViewById(R.id.anexo8);
+        video = (GLSurfaceView) findViewById(R.id.video_surface);
+        capture = (SurfaceView) findViewById(R.id.video_capture_surface);
+        video.setVisibility(View.INVISIBLE);
+        capture.setVisibility(View.INVISIBLE);
         
         init_layout_from_cfg();
         
@@ -166,27 +190,31 @@ public class AquaDroid extends Activity {
     		case WELCOME:
     			welcome.setVisibility(View.VISIBLE);
     			if(cfg.getEnablePhone()==1){
-    				anexos.setVisibility(View.VISIBLE);
+    				MainButton.setVisibility(View.VISIBLE);
     			}else{
-    				anexos.setVisibility(View.INVISIBLE);
+    				MainButton.setVisibility(View.INVISIBLE);
     			}
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case CATALOG_PICTURE:
     			welcome.setVisibility(View.INVISIBLE);
     			imageView.setVisibility(View.VISIBLE);
     			if(cfg.getEnablePhone()==1){
-    				anexos.setVisibility(View.VISIBLE);
+    				MainButton.setVisibility(View.VISIBLE);
     			}else{
-    				anexos.setVisibility(View.INVISIBLE);
+    				MainButton.setVisibility(View.INVISIBLE);
     			}
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case CATALOG_VIDEO:
@@ -194,12 +222,14 @@ public class AquaDroid extends Activity {
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.VISIBLE);
     			if(cfg.getEnablePhone()==1){
-    				anexos.setVisibility(View.VISIBLE);
+    				MainButton.setVisibility(View.VISIBLE);
     			}else{
-    				anexos.setVisibility(View.INVISIBLE);
+    				MainButton.setVisibility(View.INVISIBLE);
     			}
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case BARCODE:
@@ -208,11 +238,13 @@ public class AquaDroid extends Activity {
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.VISIBLE);
     			if(cfg.getEnablePhone()==1){
-    				anexos.setVisibility(View.VISIBLE);
+    				MainButton.setVisibility(View.VISIBLE);
     			}else{
-    				anexos.setVisibility(View.INVISIBLE);
+    				MainButton.setVisibility(View.INVISIBLE);
     			}
     			PanelAnexos.setVisibility(View.INVISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case TABLE_CALLER:
@@ -222,16 +254,42 @@ public class AquaDroid extends Activity {
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.VISIBLE);
-    			anexos.setVisibility(View.VISIBLE);
+    			MainButton.setVisibility(View.VISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case WAIT_RESPONSE:
+    			welcome.setVisibility(View.VISIBLE);
+    			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.INVISIBLE);
+    			webView.setVisibility(View.INVISIBLE);
+    			PanelAnexos.setVisibility(View.VISIBLE);
+    			MainButton.setVisibility(View.VISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		case CALL:
+    			welcome.setVisibility(View.INVISIBLE);
+    			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.INVISIBLE);
+    			webView.setVisibility(View.INVISIBLE);
+    			PanelAnexos.setVisibility(View.VISIBLE);
+    			MainButton.setVisibility(View.VISIBLE);
+    			video.setVisibility(View.VISIBLE);
+		        capture.setVisibility(View.VISIBLE);
     			break;
     			
     		case INCALL:
+    			welcome.setVisibility(View.VISIBLE);
+    			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.INVISIBLE);
+    			webView.setVisibility(View.INVISIBLE);
+    			PanelAnexos.setVisibility(View.VISIBLE);
+    			MainButton.setVisibility(View.VISIBLE);
+    			video.setVisibility(View.INVISIBLE);
+		        capture.setVisibility(View.INVISIBLE);
     			break;
     			
     		default:
@@ -353,6 +411,13 @@ public class AquaDroid extends Activity {
     		case TABLE_CALLER:
     			stopSlideTimer();
     			initSlideTimer(0, cfg.getTimeSlide());
+    		case CALL:
+    			mManager.hangOut();
+    			stopSlideTimer();
+    			setAqState(STATE.TABLE_CALLER);
+    			setState(aqState);
+    			launchState(aqState);
+    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
     		default:
     			//stopSlideTimer();
     			//setAqState(STATE.CATALOG_PICTURE);
@@ -449,19 +514,50 @@ public class AquaDroid extends Activity {
         webView.setWebViewClient(new MyWebViewClient());
         webView.setVisibility(View.INVISIBLE);
         
-		anexos.setVisibility(View.INVISIBLE);
+		MainButton.setVisibility(View.INVISIBLE);
         
         if(cfg.getEnablePhone()==1){
-            anexos.setVisibility(View.VISIBLE);
-            anexos.setOnClickListener(new OnClickListener() {
+        	mManager = new SoftphoneManager(this, video, capture);
+            MainButton.setVisibility(View.VISIBLE);
+            MainButton.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				//lanzarFin(view);
     				slotMainButton(null);
     				//Log.e(TAG, "Lanzando evento de boton");
     			}
     		});
+            
+            Anexo1.setOnClickListener(new OnClickListener() {
+    			public void onClick(View view){
+    				stopSlideTimer();
+        			setAqState(STATE.CALL);
+        			setState(aqState);
+        			launchState(aqState);
+    				mManager.makeCall("sip:132@192.168.100.15");
+    			}
+    		});
+    		
+    		Anexo2.setOnClickListener(new OnClickListener() {
+    			public void onClick(View view){
+    				stopSlideTimer();
+        			setAqState(STATE.CALL);
+        			setState(aqState);
+        			launchState(aqState);
+    				mManager.makeCall("sip:158@192.168.100.15");
+    			}
+    		});
+    		
+    		Anexo3.setOnClickListener(new OnClickListener() {
+    			public void onClick(View view){
+    				stopSlideTimer();
+        			setAqState(STATE.CALL);
+        			setState(aqState);
+        			launchState(aqState);
+    				mManager.makeCall("sip:157@192.168.100.15");
+    			}
+    		});
         }else{
-        	anexos.setVisibility(View.INVISIBLE);
+        	MainButton.setVisibility(View.INVISIBLE);
         }
     }
     
