@@ -47,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.VideoView;
 
+@SuppressWarnings("unused")
 public class AquaDroid extends Activity {
 	private static final String TAG = "AquaDroid";
 	private WebView webView;

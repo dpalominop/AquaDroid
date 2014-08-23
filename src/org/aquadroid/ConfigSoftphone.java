@@ -5,10 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.util.Log;
 
+@SuppressLint("SdCardPath")
 public class ConfigSoftphone {
 	private static final String TAG = "CONFIG";
 	private String root = "sipRegistration";
