@@ -100,6 +100,7 @@ public class AquaDroid extends Activity {
 //    private boolean isPaused = false;
     STATE aqState = STATE.WELCOME;
     STATE currentAqState;
+    private int TableCallerTime = 10;
 
     
 	/** Called when the activity is first created. */
@@ -145,7 +146,9 @@ public class AquaDroid extends Activity {
 
         setListUrl();
         
-        initSlideTimer(0, cfg.getTimeSlide());
+        setAqState(STATE.WELCOME);
+		setState(aqState);
+		launchState(aqState);
         //SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
 
 		SERVERIP = getLocalIpAddress();
@@ -300,12 +303,14 @@ public class AquaDroid extends Activity {
 		setCurrentAqState(aqState);
     	switch(aqState){
 			case WELCOME:
+				stopSlideTimer();
 				if(cfg.getEnableSlideImages()){
 					setAqState(STATE.CATALOG_PICTURE);
 					p=0;
-				}else{
+				}else if(cfg.getEnableSlideVideos()){
 					setAqState(STATE.CATALOG_VIDEO);
 				}
+				initSlideTimer(cfg.getTimeSlide(), cfg.getTimeSlide());
 				break;
 				
 			case CATALOG_PICTURE:
@@ -316,7 +321,7 @@ public class AquaDroid extends Activity {
 						if(cfg.getEnableSlideVideos()){
 							setAqState(STATE.CATALOG_VIDEO);
 						}else{
-							setAqState(STATE.CATALOG_PICTURE);
+							setAqState(STATE.WELCOME);
 						}
 					}else{
 						p+=1;
@@ -331,40 +336,34 @@ public class AquaDroid extends Activity {
 					v++;
 				}else{
 					v=0;
-					if(cfg.getEnableSlideImages()){
-						setAqState(STATE.CATALOG_PICTURE);
-					}else{
-						setAqState(STATE.CATALOG_VIDEO);
-					}
-					initSlideTimer(0, cfg.getTimeSlide());
+					setAqState(STATE.WELCOME);
+					setState(this.aqState);
+					launchState(this.aqState);
 				}
 				break;
 				
 			case BARCODE:
-				
-				if(cfg.getEnableSlideImages()){
-					setAqState(STATE.CATALOG_PICTURE);
-				}else{
-					setAqState(STATE.CATALOG_VIDEO);
-				}
-				//initSlideTimer(cfg.getTimeCode(), cfg.getTimeSlide());
+				stopSlideTimer();
+				setAqState(STATE.WELCOME);
+				initSlideTimer(cfg.getTimeCode(), cfg.getTimeSlide());
 				break;
 				
 			case TABLE_CALLER:
-				if(cfg.getEnableSlideImages()){
-					setAqState(STATE.CATALOG_PICTURE);
-				}else{
-					setAqState(STATE.CATALOG_VIDEO);
-				}
+				stopSlideTimer();
+				setAqState(STATE.WELCOME);
+				initSlideTimer(TableCallerTime, cfg.getTimeSlide());
 				break;
 				
 			case WAIT_RESPONSE:
+				stopSlideTimer();
 				break;
 				
 			case CALL:
+				stopSlideTimer();
 				break;
 				
 			case INCALL:
+				stopSlideTimer();
 				break;
 				
 			default:
@@ -379,14 +378,12 @@ public class AquaDroid extends Activity {
     			setAqState(STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
-    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
     			break;
     		case CATALOG_PICTURE:
     			stopSlideTimer();
     			setAqState(STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
-    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
     			break;
 			case CATALOG_VIDEO:
 				//stopSlideTimer();
@@ -398,23 +395,24 @@ public class AquaDroid extends Activity {
 				setAqState(STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
-    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
 				break;
     		case BARCODE:
     			stopSlideTimer();
     			setAqState(STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
-    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
     			break;
     		case TABLE_CALLER:
     			stopSlideTimer();
-    			initSlideTimer(0, cfg.getTimeSlide());
+    			setAqState(STATE.WELCOME);
+    			setState(aqState);
+    			launchState(aqState);
     		case CALL:
     			mManager.hangOut();
     			stopSlideTimer();
     			setAqState(STATE.WELCOME);
-    			initSlideTimer(0, cfg.getTimeSlide());
+    			setState(aqState);
+    			launchState(aqState);
     		default:
     			//stopSlideTimer();
     			//setAqState(STATE.CATALOG_PICTURE);
