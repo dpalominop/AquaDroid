@@ -50,8 +50,8 @@ import android.widget.VideoView;
 public class AquaDroid extends Activity {
 	private static final String TAG = "AquaDroid";
 	private WebView webView;
-	private Timer MyTimer;
-	private TimerTask MyTimerTask;
+	private Timer MyTimer = null;
+	private TimerTask MyTimerTask = null;
 	private int timeTableCaller = 10;
 	
 	private Button MainButton;
@@ -197,6 +197,7 @@ public class AquaDroid extends Activity {
     				MainButton.setVisibility(View.INVISIBLE);
     			}
     			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.GONE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
@@ -237,6 +238,7 @@ public class AquaDroid extends Activity {
     		case BARCODE:
     			welcome.setVisibility(View.INVISIBLE);
     			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.GONE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.VISIBLE);
     			if(cfg.getEnablePhone()){
@@ -264,6 +266,7 @@ public class AquaDroid extends Activity {
     		case WAIT_RESPONSE:
     			welcome.setVisibility(View.VISIBLE);
     			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.GONE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
@@ -275,6 +278,7 @@ public class AquaDroid extends Activity {
     		case CALL:
     			welcome.setVisibility(View.INVISIBLE);
     			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.GONE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
@@ -286,6 +290,7 @@ public class AquaDroid extends Activity {
     		case INCALL:
     			welcome.setVisibility(View.VISIBLE);
     			imageView.setVisibility(View.INVISIBLE);
+    			videoView.setVisibility(View.GONE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
     			PanelAnexos.setVisibility(View.INVISIBLE);
@@ -619,8 +624,10 @@ public class AquaDroid extends Activity {
     		MyTimerTask.cancel();
     		//MyTimerTask=null;
     	}
-        MyTimer.cancel();
-        MyTimer.purge();
+    	if(MyTimer != null){
+	        MyTimer.cancel();
+	        MyTimer.purge();
+    	}
     }
 	
 	public List<String> listFileImagesByExt(String dir) {

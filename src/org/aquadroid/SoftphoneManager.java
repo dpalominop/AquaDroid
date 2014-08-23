@@ -262,8 +262,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.oldphone_mono, basePath + "/oldphone_mono.wav");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.ringback, basePath + "/ringback.wav");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.toy_mono, basePath + "/toy_mono.wav");
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.linphonerc_default, basePath + "/.linphonerc");
-		SoftphoneUtils.copyFromPackage(mContext, R.raw.linphonerc_factory, new File(basePath + "/linphonerc").getName());
+		//SoftphoneUtils.copyIfNotExist(mContext, R.raw.linphonerc_default, basePath + "/.linphonerc");
+		//SoftphoneUtils.copyFromPackage(mContext, R.raw.linphonerc_factory, new File(basePath + "/linphonerc").getName());
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.lpconfig, basePath + "/lpconfig.xsd");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.rootca, basePath + "/rootca.pem");
 	}
