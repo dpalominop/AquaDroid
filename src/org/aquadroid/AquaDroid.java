@@ -47,7 +47,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.VideoView;
 
-@SuppressWarnings("deprecation")
 public class AquaDroid extends Activity {
 	private static final String TAG = "AquaDroid";
 	private WebView webView;
@@ -189,7 +188,7 @@ public class AquaDroid extends Activity {
     	switch(aqState){
     		case WELCOME:
     			welcome.setVisibility(View.VISIBLE);
-    			if(cfg.getEnablePhone()==1){
+    			if(cfg.getEnablePhone()){
     				MainButton.setVisibility(View.VISIBLE);
     			}else{
     				MainButton.setVisibility(View.INVISIBLE);
@@ -205,7 +204,7 @@ public class AquaDroid extends Activity {
     		case CATALOG_PICTURE:
     			welcome.setVisibility(View.INVISIBLE);
     			imageView.setVisibility(View.VISIBLE);
-    			if(cfg.getEnablePhone()==1){
+    			if(cfg.getEnablePhone()){
     				MainButton.setVisibility(View.VISIBLE);
     			}else{
     				MainButton.setVisibility(View.INVISIBLE);
@@ -221,7 +220,7 @@ public class AquaDroid extends Activity {
     			welcome.setVisibility(View.INVISIBLE);
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.VISIBLE);
-    			if(cfg.getEnablePhone()==1){
+    			if(cfg.getEnablePhone()){
     				MainButton.setVisibility(View.VISIBLE);
     			}else{
     				MainButton.setVisibility(View.INVISIBLE);
@@ -237,7 +236,7 @@ public class AquaDroid extends Activity {
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.VISIBLE);
-    			if(cfg.getEnablePhone()==1){
+    			if(cfg.getEnablePhone()){
     				MainButton.setVisibility(View.VISIBLE);
     			}else{
     				MainButton.setVisibility(View.INVISIBLE);
@@ -264,7 +263,7 @@ public class AquaDroid extends Activity {
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
-    			PanelAnexos.setVisibility(View.VISIBLE);
+    			PanelAnexos.setVisibility(View.INVISIBLE);
     			MainButton.setVisibility(View.VISIBLE);
     			video.setVisibility(View.INVISIBLE);
 		        capture.setVisibility(View.INVISIBLE);
@@ -275,7 +274,7 @@ public class AquaDroid extends Activity {
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
-    			PanelAnexos.setVisibility(View.VISIBLE);
+    			PanelAnexos.setVisibility(View.INVISIBLE);
     			MainButton.setVisibility(View.VISIBLE);
     			video.setVisibility(View.VISIBLE);
 		        capture.setVisibility(View.VISIBLE);
@@ -286,7 +285,7 @@ public class AquaDroid extends Activity {
     			imageView.setVisibility(View.INVISIBLE);
     			videoView.setVisibility(View.INVISIBLE);
     			webView.setVisibility(View.INVISIBLE);
-    			PanelAnexos.setVisibility(View.VISIBLE);
+    			PanelAnexos.setVisibility(View.INVISIBLE);
     			MainButton.setVisibility(View.VISIBLE);
     			video.setVisibility(View.INVISIBLE);
 		        capture.setVisibility(View.INVISIBLE);
@@ -301,7 +300,7 @@ public class AquaDroid extends Activity {
 		setCurrentAqState(aqState);
     	switch(aqState){
 			case WELCOME:
-				if(cfg.getEnableSlideImages()==1){
+				if(cfg.getEnableSlideImages()){
 					setAqState(STATE.CATALOG_PICTURE);
 					p=0;
 				}else{
@@ -314,7 +313,7 @@ public class AquaDroid extends Activity {
 					loadImageFile(list_images[p]);
 					if(p >= total_images-1){
 						p = 0;
-						if(cfg.getEnableSlideVideos()==1){
+						if(cfg.getEnableSlideVideos()){
 							setAqState(STATE.CATALOG_VIDEO);
 						}else{
 							setAqState(STATE.CATALOG_PICTURE);
@@ -332,7 +331,7 @@ public class AquaDroid extends Activity {
 					v++;
 				}else{
 					v=0;
-					if(cfg.getEnableSlideImages()==1){
+					if(cfg.getEnableSlideImages()){
 						setAqState(STATE.CATALOG_PICTURE);
 					}else{
 						setAqState(STATE.CATALOG_VIDEO);
@@ -343,7 +342,7 @@ public class AquaDroid extends Activity {
 				
 			case BARCODE:
 				
-				if(cfg.getEnableSlideImages()==1){
+				if(cfg.getEnableSlideImages()){
 					setAqState(STATE.CATALOG_PICTURE);
 				}else{
 					setAqState(STATE.CATALOG_VIDEO);
@@ -352,7 +351,7 @@ public class AquaDroid extends Activity {
 				break;
 				
 			case TABLE_CALLER:
-				if(cfg.getEnableSlideImages()==1){
+				if(cfg.getEnableSlideImages()){
 					setAqState(STATE.CATALOG_PICTURE);
 				}else{
 					setAqState(STATE.CATALOG_VIDEO);
@@ -414,10 +413,9 @@ public class AquaDroid extends Activity {
     		case CALL:
     			mManager.hangOut();
     			stopSlideTimer();
-    			setAqState(STATE.TABLE_CALLER);
+    			setAqState(STATE.WELCOME);
     			setState(aqState);
     			launchState(aqState);
-    			initSlideTimer(timeTableCaller, cfg.getTimeSlide());
     		default:
     			//stopSlideTimer();
     			//setAqState(STATE.CATALOG_PICTURE);
@@ -455,14 +453,14 @@ public class AquaDroid extends Activity {
         welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/foreground.jpg"));
         welcome.setVisibility(View.VISIBLE);
         
-        if(cfg.getEnableSlideImages()==1){
+        if(cfg.getEnableSlideImages()){
 	        List<String> slide = listFileImagesByExt(cfg.getWorkDirectory()+cfg.getImageDirectory());
 	        list_images = (String[]) slide.toArray(new String[0]);
 	        total_images = list_images.length;
         }
     	imageView.setVisibility(View.INVISIBLE);
         
-        if(cfg.getEnableSlideVideos()==1){
+        if(cfg.getEnableSlideVideos()){
     		
         	List<String> slide = listFileVideosByExt(cfg.getWorkDirectory()+cfg.getVideoDirectory());
 	        list_videos = (String[]) slide.toArray(new String[0]);
@@ -516,8 +514,8 @@ public class AquaDroid extends Activity {
         
 		MainButton.setVisibility(View.INVISIBLE);
         
-        if(cfg.getEnablePhone()==1){
-        	mManager = new SoftphoneManager(this, video, capture);
+        if(cfg.getEnablePhone()){
+        	mManager = new SoftphoneManager(this, video, capture, cfg);
             MainButton.setVisibility(View.VISIBLE);
             MainButton.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
@@ -809,16 +807,17 @@ public class AquaDroid extends Activity {
         }
         return null;
     }
-	@Override
+	
+	/*@Override
     protected void onStop() {
-        super.onStop();
         try {
              // make sure you close the socket upon exiting
              serverSocket.close();
          } catch (IOException e) {
              e.printStackTrace();
          }
-    }
+        super.onStop();
+    }*/
 	
     protected void onDataReceived(final byte[] buffer, final int size) {
             runOnUiThread(new Runnable() {
@@ -919,12 +918,13 @@ public class AquaDroid extends Activity {
 
     @Override
     protected void onDestroy() {
-            if (mReadThread != null)
-                    mReadThread.interrupt();
-            mScanner.closeSerialPort();
-            mSerialPort = null;
-            stopSlideTimer();
-            super.onDestroy();
+    	mManager.destroy();
+        if (mReadThread != null)
+                mReadThread.interrupt();
+        mScanner.closeSerialPort();
+        mSerialPort = null;
+        stopSlideTimer();
+        super.onDestroy();
     }
  
 }

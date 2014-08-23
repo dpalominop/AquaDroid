@@ -47,10 +47,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	private LinphoneCore mLinphoneCore;
 	private LinphoneCall mLinphoneCall;
 	private Timer mTimer;
-	/*private GLSurfaceView view;
-	private SurfaceView previewSurface;
-	private AndroidVideoWindowImpl mVideoWindow;
-	private SurfaceHolder holder;*/
 	
 	private GLSurfaceView mVideoView;
 	private SurfaceView mCaptureView;
@@ -58,58 +54,63 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	
 	private String identity = "sip:155@192.168.100.15";
 	private String password = "pwd155";
+	private ConfigSoftphone cfg_soft;
 	
-	public SoftphoneManager(Context c, GLSurfaceView video, SurfaceView capture) {
+	public SoftphoneManager(Context c, GLSurfaceView video, SurfaceView capture, Config cfg) {
 		mContext = c;
 		LinphoneCoreFactory.instance().setDebugMode(true, "Linphone Mini");
 		
 		try {
-			String basePath = mContext.getFilesDir().getAbsolutePath();
+			String basePath = cfg.getWorkDirectory()+"/"+cfg.getSoundsDirectory();
 			copyAssetsFromPackage(basePath);
+			mInstance = this;
+			cfg_soft = new ConfigSoftphone(cfg.getWorkDirectory()+"/"+cfg.getSettingsDirectory());
+			identity = "sip:"+cfg_soft.getUser()+"@"+cfg_soft.getDomain();
+			password = cfg_soft.getPassword();
+			
 			mLinphoneCore = LinphoneCoreFactory.instance().createLinphoneCore(this, mContext);
-			//mLinphoneCore = LinphoneCoreFactory.instance().createLinphoneCore(this, basePath + "/.linphonerc", basePath + "/linphonerc", null, mContext);
-			initLinphoneCoreValues(basePath);
+		
+			LinphoneAddress from = LinphoneCoreFactory.instance().createLinphoneAddress(identity);
+			
+			String username = from.getUserName();
+			String domain = from.getDomain();
+			
+			LinphoneAuthInfo info;
+			if (password != null) {
+				info = LinphoneCoreFactory.instance().createAuthInfo(username, password, null, domain);
+				mLinphoneCore.addAuthInfo(info);
+			}
+
+			LinphoneProxyConfig proxyCfg;
+			proxyCfg = LinphoneCoreFactory.instance().createProxyConfig(identity, domain, null, true);
+			proxyCfg.setExpires(2000);
+			proxyCfg.setProxy(domain);
+			
+			mLinphoneCore.addProxyConfig(proxyCfg); // add it to linphone
+			mLinphoneCore.setDefaultProxyConfig(proxyCfg);
+			
+			mLinphoneCore.setContext(mContext);
+			mLinphoneCore.setRing(basePath + "/oldphone_mono.wav");
+			mLinphoneCore.setRootCA(basePath + "/rootca.pem");
+			mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
+			//mLinphoneCore.setChatDatabasePath(basePath + "/linphone-history.db");
+			
+			int availableCores = Runtime.getRuntime().availableProcessors();
+			mLinphoneCore.setCpuCount(availableCores);
+			mLinphoneCore.setMaxCalls(1);
+			
+			LinphoneCodecDisable(0,-1);
+			LinphoneCodecEnable(0, 4);
+			LinphoneCodecEnable(0, 5);
+			LinphoneCodecDisable(1,-1);
+			LinphoneCodecEnable(1, 1);
 			
 			setUserAgent();
 			setFrontCamAsDefault();
 			startIterate();
-			mInstance = this;
 	        mLinphoneCore.setNetworkReachable(true); // Let's assume it's true
 	        mLinphoneCore.enableVideo(true, true);
 	        mLinphoneCore.setVideoPolicy(true, true);
-	        
-	        /*previewSurface = capture;
-	        holder = previewSurface.getHolder();
-			holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-			view = video;
-
-			view.setZOrderOnTop(false);
-			previewSurface.setZOrderOnTop(true);
-			
-			mVideoWindow = new AndroidVideoWindowImpl(view, previewSurface);
-		
-			mVideoWindow.setListener(new AndroidVideoWindowImpl.VideoWindowListener() {					
-						public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView sv) {
-							//setVideoPreviewWindowId(previewSurface, nativeObj);
-							mLinphoneCore.setPreviewWindow(previewSurface);
-						};
-						
-						@Override
-						public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-						}
-						
-						public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {};
-						
-						public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView sv) {
-							mLinphoneCore.setVideoWindow(vw);
-							//setVideoWindowId(vw, nativeObj);
-							// set device rotation too
-							//setDeviceRotation(rotationToAngle(getWindowManager().getDefaultDisplay().getRotation()), nativeObj);
-						}
-					}); 
-			
-			mVideoWindow.init();*/
 	        
 	        mVideoView = video;
 	        mCaptureView = capture;
@@ -267,7 +268,11 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.rootca, basePath + "/rootca.pem");
 	}
 	
-	private void initLinphoneCoreValues(String basePath) throws LinphoneCoreException {
+	/*private void initLinphoneCoreValues(String basePath) throws LinphoneCoreException {
+		cfg_soft = new ConfigSoftphone(mContext);
+		
+		identity = "sip:"+cfg_soft.getUser()+"@"+cfg_soft.getDomain();
+		password = cfg_soft.getPassword();
 		LinphoneAddress from = LinphoneCoreFactory.instance().createLinphoneAddress(identity);
 		String username = from.getUserName();
 		String domain = from.getDomain();
@@ -304,7 +309,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		LinphoneCodecDisable(1,-1);
 		LinphoneCodecEnable(1, 1);
 		
-	}
+	}*/
 	
 	/*@Override
 	public void authInfoRequested(LinphoneCore lc, String realm, String username) {

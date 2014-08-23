@@ -1,5 +1,5 @@
 package org.aquadroid;
-import java.io.FileInputStream;
+import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,11 +15,11 @@ import android.content.Context;
 
 public class ParseXML {
 	private String filename;
-	private Context ctx;
+	private String path;
 	
-	public ParseXML(Context context, String filename)
+	public ParseXML(String path, String filename)
 	{
-		this.ctx = context;
+		this.path = path;
 		this.filename = filename;
 		
 	}
@@ -31,9 +31,10 @@ public class ParseXML {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			//inputSource = new InputSource(new FileInputStream(new File(this.fileName)));
-			FileInputStream fs = ctx.openFileInput(this.filename);
+			//FileInputStream fs = ctx.openFileInput(this.filename);
 			//Document doc = db.parse(new InputSource(new FileInputStream(new File(this.filename))));
-			Document doc = db.parse(new InputSource(fs));
+			File file= new File(path, filename);
+			Document doc = db.parse(file);
 			doc.getDocumentElement().normalize();
 			
 			NodeList nodeList = doc.getElementsByTagName(root);

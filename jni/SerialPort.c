@@ -160,6 +160,7 @@ JNIEXPORT void JNICALL Java_org_aquadroid_SerialPort_close
 	jobject mFd = (*env)->GetObjectField(env, thiz, mFdID);
 	jint descriptor = (*env)->GetIntField(env, mFd, descriptorID);
 
+
 	LOGD("close(fd = %d)", descriptor);
 	close(descriptor);
 }
