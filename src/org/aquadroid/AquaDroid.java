@@ -414,8 +414,7 @@ public class AquaDroid extends Activity {
     			mManager.hangOut();
     			stopSlideTimer();
     			setAqState(STATE.WELCOME);
-    			setState(aqState);
-    			launchState(aqState);
+    			initSlideTimer(0, cfg.getTimeSlide());
     		default:
     			//stopSlideTimer();
     			//setAqState(STATE.CATALOG_PICTURE);
