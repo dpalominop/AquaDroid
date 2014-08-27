@@ -22,6 +22,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
 
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCoreException;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -29,6 +32,8 @@ import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -43,6 +48,7 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.VideoView;
@@ -68,6 +74,7 @@ public class AquaDroid extends Activity {
 	private Button Anexo6;
 	private Button Anexo7;
 	private Button Anexo8;
+	private State callState = State.Idle;
 	private GLSurfaceView video;
 	private SurfaceView capture;
 	private SoftphoneManager mManager;
@@ -102,7 +109,7 @@ public class AquaDroid extends Activity {
     STATE aqState = STATE.WELCOME;
     STATE currentAqState;
     private int TableCallerTime = 10;
-
+    Timer callStateTimer = null;
     
 	/** Called when the activity is first created. */
     @Override
@@ -310,6 +317,7 @@ public class AquaDroid extends Activity {
     	switch(aqState){
 			case WELCOME:
 				stopSlideTimer();
+				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/foreground.jpg"));
 				if(cfg.getEnableSlideImages()){
 					setAqState(STATE.CATALOG_PICTURE);
 					p=0;
@@ -317,6 +325,7 @@ public class AquaDroid extends Activity {
 					setAqState(STATE.CATALOG_VIDEO);
 				}
 				initSlideTimer(cfg.getTimeSlide(), cfg.getTimeSlide());
+				setImageMainButton("call.png");
 				break;
 				
 			case CATALOG_PICTURE:
@@ -333,6 +342,7 @@ public class AquaDroid extends Activity {
 						p+=1;
 					}	
 				}
+		    	setImageMainButton("call.png");
 				break;
 				
 			case CATALOG_VIDEO:
@@ -346,29 +356,37 @@ public class AquaDroid extends Activity {
 					setState(this.aqState);
 					launchState(this.aqState);
 				}
+				setImageMainButton("call.png");
 				break;
 				
 			case BARCODE:
 				stopSlideTimer();
 				setAqState(STATE.WELCOME);
 				initSlideTimer(cfg.getTimeCode(), cfg.getTimeSlide());
+				setImageMainButton("call.png");
 				break;
 				
 			case TABLE_CALLER:
 				stopSlideTimer();
 				setAqState(STATE.WELCOME);
 				initSlideTimer(TableCallerTime, cfg.getTimeSlide());
+				setImageMainButton("back.png");
 				break;
 				
 			case WAIT_RESPONSE:
 				stopSlideTimer();
+				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/ringing.jpg"));
+				setImageMainButton("hangup.png");
 				break;
 				
 			case CALL:
 				stopSlideTimer();
+				setImageMainButton("hangup.png");
 				break;
 				
 			case INCALL:
+				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/ringing.jpg"));
+				setImageMainButton("answer.png");
 				stopSlideTimer();
 				break;
 				
@@ -377,7 +395,7 @@ public class AquaDroid extends Activity {
     	}
     }
     
-    public void slotMainButton(View view){
+    public void slotMainButton(View view) throws LinphoneCoreException{
     	switch(currentAqState){
     		case WELCOME:
     			stopSlideTimer();
@@ -413,12 +431,22 @@ public class AquaDroid extends Activity {
     			setAqState(STATE.WELCOME);
     			setState(aqState);
     			launchState(aqState);
+    			break;
+    		case WAIT_RESPONSE:
     		case CALL:
     			mManager.hangOut();
     			stopSlideTimer();
     			setAqState(STATE.WELCOME);
     			setState(aqState);
     			launchState(aqState);
+    			break;
+    		case INCALL:
+    			mManager.answer();
+    			stopSlideTimer();
+    			setAqState(STATE.CALL);
+    			setState(aqState);
+    			launchState(aqState);
+    			break;
     		default:
     			//stopSlideTimer();
     			//setAqState(STATE.CATALOG_PICTURE);
@@ -426,6 +454,59 @@ public class AquaDroid extends Activity {
     			break;
     	}
     }
+    
+    private Runnable softphone_Timer_Tick = new Runnable() {
+		@Override
+		public void run() {
+			//This method runs in the same thread as the UI.    	       
+			//Do something to the UI thread here
+			//Log.e(TAG, "my timer emmit: " + aqState.toString());
+			
+			if(callState != mManager.getCallState()){
+				Log.d("TEST-PREV", mManager.getCallState().toString());
+				callState = mManager.getCallState();
+				Log.d("TEST-POST", callState.toString());
+				
+				if(callState == State.IncomingReceived){
+					setAqState(STATE.INCALL);
+					setState(aqState);
+					launchState(aqState);
+				}else if(callState == State.StreamsRunning){
+					setAqState(STATE.CALL);
+					setState(aqState);
+					launchState(aqState);
+				}else if(callState == State.CallReleased){
+					setAqState(STATE.WELCOME);
+					setState(aqState);
+					launchState(aqState);
+				}
+			}
+		}
+	};
+	
+    private void SoftphoneTimerMethod()
+	{
+		//This method is called directly by the timer
+		//and runs in the same thread as the timer.
+
+		//We call the method that will work with the UI
+		//through the runOnUiThread method.
+    	
+		this.runOnUiThread(softphone_Timer_Tick);
+	}
+    
+    private void startCallStatetTimer() {
+		TimerTask lTask = new TimerTask() {
+			@Override
+			public void run() {
+				SoftphoneTimerMethod();
+			}
+		};
+		
+		/*use schedule instead of scheduleAtFixedRate to avoid iterate from being call in burst after cpu wake up*/
+		callStateTimer = new Timer("Call STATE");
+		callStateTimer.schedule(lTask, 0, 500);
+	}
     
 	public void playVideo(String video) {
 		videoView.setVideoPath(cfg.getWorkDirectory()+cfg.getVideoDirectory() + "/" + video);
@@ -515,23 +596,25 @@ public class AquaDroid extends Activity {
         webView.setWebViewClient(new MyWebViewClient());
         webView.setVisibility(View.INVISIBLE);
         
-		MainButton.setVisibility(View.INVISIBLE);
         
         if(cfg.getEnablePhone()){
         	mManager = new SoftphoneManager(this, video, capture, cfg);
             MainButton.setVisibility(View.VISIBLE);
             MainButton.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
-    				//lanzarFin(view);
-    				slotMainButton(null);
-    				//Log.e(TAG, "Lanzando evento de boton");
+    				try {
+						slotMainButton(null);
+					} catch (LinphoneCoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
     			}
     		});
             
             Anexo1.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.CALL);
+        			setAqState(STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:132@192.168.100.15");
@@ -541,7 +624,7 @@ public class AquaDroid extends Activity {
     		Anexo2.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.CALL);
+        			setAqState(STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:158@192.168.100.15");
@@ -551,12 +634,14 @@ public class AquaDroid extends Activity {
     		Anexo3.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.CALL);
+        			setAqState(STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:157@192.168.100.15");
     			}
     		});
+    		
+    		startCallStatetTimer();
         }else{
         	MainButton.setVisibility(View.INVISIBLE);
         }
@@ -923,6 +1008,9 @@ public class AquaDroid extends Activity {
 
     @Override
     protected void onDestroy() {
+    	if(cfg.getEnablePhone() && callStateTimer!=null){
+    		callStateTimer.cancel();
+    	}
     	mManager.destroy();
         if (mReadThread != null)
                 mReadThread.interrupt();
@@ -932,4 +1020,12 @@ public class AquaDroid extends Activity {
         super.onDestroy();
     }
  
+    private void setImageMainButton(String fileName){
+    	Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getButtonDirectory()+ "/" + fileName);
+    	Drawable d = new BitmapDrawable(b);
+    	MainButton.setBackgroundDrawable(d);
+    	MainButton.getLayoutParams().height = b.getHeight();
+    	MainButton.getLayoutParams().width = b.getWidth();
+    	MainButton.setPadding(10, 10, 10, 10);
+    }
 }

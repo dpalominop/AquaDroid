@@ -42,6 +42,7 @@ import android.view.SurfaceView;
 public class SoftphoneManager implements LinphoneCoreListener {
 	
 	private static SoftphoneManager mInstance;
+	private static State callState = State.Idle;
 	private Context mContext;
 	private LinphoneCore mLinphoneCore;
 	private LinphoneCall mLinphoneCall;
@@ -233,7 +234,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		
 		/*use schedule instead of scheduleAtFixedRate to avoid iterate from being call in burst after cpu wake up*/
 		mTimer = new Timer("LinphoneMini scheduler");
-		mTimer.schedule(lTask, 0, 20); 
+		mTimer.schedule(lTask, 0, 20);
 	}
 	
 	private void setUserAgent() {
@@ -266,54 +267,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.lpconfig, basePath + "/lpconfig.xsd");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.rootca, basePath + "/rootca.pem");
 	}
-	
-	/*private void initLinphoneCoreValues(String basePath) throws LinphoneCoreException {
-		cfg_soft = new ConfigSoftphone(mContext);
-		
-		identity = "sip:"+cfg_soft.getUser()+"@"+cfg_soft.getDomain();
-		password = cfg_soft.getPassword();
-		LinphoneAddress from = LinphoneCoreFactory.instance().createLinphoneAddress(identity);
-		String username = from.getUserName();
-		String domain = from.getDomain();
-		
-		LinphoneAuthInfo info;
-		if (password != null) {
-			// create authentication structure from identity and add to linphone
-			info = LinphoneCoreFactory.instance().createAuthInfo(username, password, null, domain);
-			mLinphoneCore.addAuthInfo(info);
-		}
-
-		// create proxy config
-		LinphoneProxyConfig proxyCfg;
-		proxyCfg = LinphoneCoreFactory.instance().createProxyConfig(identity, domain, null, true);
-		proxyCfg.setExpires(2000);
-		proxyCfg.setProxy(domain);
-		
-		mLinphoneCore.addProxyConfig(proxyCfg); // add it to linphone
-		mLinphoneCore.setDefaultProxyConfig(proxyCfg);
-		
-		mLinphoneCore.setContext(mContext);
-		mLinphoneCore.setRing(null);
-		mLinphoneCore.setRootCA(basePath + "/rootca.pem");
-		mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
-		mLinphoneCore.setChatDatabasePath(basePath + "/linphone-history.db");
-		
-		int availableCores = Runtime.getRuntime().availableProcessors();
-		mLinphoneCore.setCpuCount(availableCores);
-		mLinphoneCore.setMaxCalls(1);
-		
-		LinphoneCodecDisable(0,-1);
-		LinphoneCodecEnable(0, 4);
-		LinphoneCodecEnable(0, 5);
-		LinphoneCodecDisable(1,-1);
-		LinphoneCodecEnable(1, 1);
-		
-	}*/
-	
-	/*@Override
-	public void authInfoRequested(LinphoneCore lc, String realm, String username) {
-		
-	}*/
 
 	@Override
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {
@@ -324,6 +277,11 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate,
 			String message) {
 		Log.d("Call state: " + cstate + "(" + message + ")");
+		callState = cstate;
+	}
+	
+	public State getCallState(){
+		return callState;
 	}
 
 	@Override
@@ -471,5 +429,12 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			}
 		}
 	}
-
+	
+	public void answer() throws LinphoneCoreException{
+		mLinphoneCall = mLinphoneCore.getCurrentCall();
+		
+		if(mLinphoneCall.getState()==LinphoneCall.State.IncomingReceived){
+			mLinphoneCore.acceptCall(mLinphoneCall);
+		}
+	}
 }

@@ -22,6 +22,7 @@ public class Config {
 	private String work_directory = "/sdcard/AquaDROID/";
 	private String image_directory = "slideshow_images";
 	private String video_directory = "slideshow_videos";
+	private String button_directory = "button_images";
 	private String sounds_directory = "sounds";
 	private String settings_directory = "settings";
 	private String portcom = "/dev/s3c2410_serial0";
@@ -51,6 +52,7 @@ public class Config {
 		Log.i(TAG, "directory: " + this.work_directory);
 		this.image_directory = px.getItem(root, "ImageDirectory");
 		this.video_directory = px.getItem(root, "VideoDirectory");
+		this.button_directory = px.getItem(root, "ButtonDirectory");
 		this.portcom = px.getItem(root, "PortCOM");
 		this.baudrate = Integer.parseInt(px.getItem(root, "BaudRate"));
 		this.headcode = Integer.parseInt(px.getItem(root, "HeadCode"));
@@ -98,6 +100,9 @@ public class Config {
 	}
 	public String getSettingsDirectory(){
 		return this.settings_directory;
+	}
+	public String getButtonDirectory(){
+		return this.button_directory;
 	}
 	public String getPortCOM()
 	{
@@ -147,6 +152,7 @@ public class Config {
 			sb.append("<WorkingDirectory>/sdcard/AquaDROID/</WorkingDirectory>\n");
 			sb.append("<ImageDirectory>slideshow_images/</ImageDirectory>\n");
 			sb.append("<VideoDirectory>slideshow_videos/</VideoDirectory>\n");
+			sb.append("<ButtonDirectory>button_images/</ButtonDirectory>\n");
 			sb.append("<PortCOM>/dev/s3c2410_serial0</PortCOM>\n");
 			sb.append("<BaudRate>9600</BaudRate>\n");
 			sb.append("<HeadCode>1</HeadCode>\n");

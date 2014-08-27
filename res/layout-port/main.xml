@@ -141,9 +141,8 @@
     
     <Button
         android:id="@+id/MainButton"
-        android:layout_width="181dp"
-        android:layout_height="45dp"
-        android:layout_gravity="bottom|right"
-        android:background="@drawable/call" />
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_gravity="bottom|right" />
 
 </FrameLayout>
