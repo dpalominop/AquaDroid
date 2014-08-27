@@ -14,17 +14,17 @@ public class Config {
 	private static final String TAG = "CONFIG";
 	private String filename = "terminal.xml";
 	private String root = "AquaDroid";
+	private String settings_directory = "settings";
 	//private Context context;
 	private String serverip;
 	private int serverport;
 	private int timecode;
 	private int timeslide;
 	private String work_directory = "/sdcard/AquaDROID/";
-	private String image_directory = "slideshow_images";
-	private String video_directory = "slideshow_videos";
-	private String button_directory = "button_images";
-	private String sounds_directory = "sounds";
-	private String settings_directory = "settings";
+	private String image_directory = "slideshow_images/";
+	private String video_directory = "slideshow_videos/";
+	private String button_directory = "button_images/";
+	private String sounds_directory = "sounds/";
 	private String portcom = "/dev/s3c2410_serial0";
 	private int baudrate = 9600;
 	private int headcode = 1;
@@ -35,9 +35,7 @@ public class Config {
 	
 	public Config(Context context)
 	{
-		//this.context = context;
 		try{
-			//FileInputStream fis = this.context.openFileInput(this.filename);
 			FileInputStream fis = new FileInputStream(new File(work_directory+"/"+settings_directory, filename));
 			fis.close();
 		}catch(FileNotFoundException e){
@@ -48,73 +46,76 @@ public class Config {
 			
 		}
 		ParseXML px = new ParseXML(work_directory+"/"+settings_directory, filename);
-		this.work_directory = px.getItem(root, "WorkingDirectory");
-		Log.i(TAG, "directory: " + this.work_directory);
-		this.image_directory = px.getItem(root, "ImageDirectory");
-		this.video_directory = px.getItem(root, "VideoDirectory");
-		this.button_directory = px.getItem(root, "ButtonDirectory");
-		this.portcom = px.getItem(root, "PortCOM");
-		this.baudrate = Integer.parseInt(px.getItem(root, "BaudRate"));
-		this.headcode = Integer.parseInt(px.getItem(root, "HeadCode"));
-		this.serverip = px.getItem(root, "ServerIP");
+		work_directory = px.getItem(root, "WorkingDirectory", "/sdcard/AquaDROID/");
+		Log.i(TAG, "directory: " + work_directory);
+		
+		image_directory = px.getItem(root, "ImageDirectory", "slideshow_images/");
+		video_directory = px.getItem(root, "VideoDirectory", "slideshow_videos/");
+		button_directory = px.getItem(root, "ButtonDirectory", "button_images/");
+		sounds_directory = px.getItem(root, "SoundsDirectory", "sounds/");
+		
+		portcom = px.getItem(root, "PortCOM", "/dev/s3c2410_serial0");
+		baudrate = Integer.parseInt(px.getItem(root, "BaudRate", "9600"));
+		headcode = Integer.parseInt(px.getItem(root, "HeadCode", "1"));
+		serverip = px.getItem(root, "ServerIP", "192.168.100.3");
 		Log.i(TAG, "serverip: " + this.serverip);
-		this.serverport = Integer.parseInt(px.getItem(root, "ServerPort"));
-		this.timecode = Integer.parseInt(px.getItem(root, "TimeCode"));
-		this.timeslide = Integer.parseInt(px.getItem(root, "TimeSlide"));
+		serverport = Integer.parseInt(px.getItem(root, "ServerPort", "1234"));
 		
-		this.enableSlideImages = Integer.parseInt(px.getItem(root, "EnableSlideImages"));
-		this.enableSlideVideos = Integer.parseInt(px.getItem(root, "EnableSlideVideos"));
-		this.enablePhone = Integer.parseInt(px.getItem(root, "EnablePhone"));
+		timecode = Integer.parseInt(px.getItem(root, "TimeCode", "15"));
+		timeslide = Integer.parseInt(px.getItem(root, "TimeSlide", "10"));
 		
+		enableSlideImages = Integer.parseInt(px.getItem(root, "EnableSlideImages", "1"));
+		enableSlideVideos = Integer.parseInt(px.getItem(root, "EnableSlideVideos", "1"));
+		enablePhone = Integer.parseInt(px.getItem(root, "EnablePhone", "1"));
 	}
 	public String getServerIp()
 	{
-		return this.serverip;
+		return serverip;
 	}
 	public int getServerPort()
 	{
-		return this.serverport;
+		return serverport;
 	}
 	public int getTimeCode()
 	{
-		return this.timecode;
+		return timecode;
 	}
 	public int getTimeSlide()
 	{
-		return this.timeslide;
+		return timeslide;
 	}
 	public String getWorkDirectory()
 	{
-		return this.work_directory;
+		return work_directory;
 	}
 	public String getImageDirectory()
 	{
-		return this.image_directory;
+		return image_directory;
 	}
 	public String getVideoDirectory()
 	{
-		return this.video_directory;
+		return video_directory;
 	}
 	public String getSoundsDirectory(){
-		return this.sounds_directory;
+		return sounds_directory;
 	}
 	public String getSettingsDirectory(){
-		return this.settings_directory;
+		return settings_directory;
 	}
 	public String getButtonDirectory(){
-		return this.button_directory;
+		return button_directory;
 	}
 	public String getPortCOM()
 	{
-		return this.portcom;
+		return portcom;
 	}
 	public int getBaudRate()
 	{
-		return this.baudrate;
+		return baudrate;
 	}
 	public int getHeadCode()
 	{
-		return this.headcode;
+		return headcode;
 	}
 	public Boolean getEnableSlideImages() {
 		if(enableSlideImages==1){
@@ -152,7 +153,6 @@ public class Config {
 			sb.append("<WorkingDirectory>/sdcard/AquaDROID/</WorkingDirectory>\n");
 			sb.append("<ImageDirectory>slideshow_images/</ImageDirectory>\n");
 			sb.append("<VideoDirectory>slideshow_videos/</VideoDirectory>\n");
-			sb.append("<ButtonDirectory>button_images/</ButtonDirectory>\n");
 			sb.append("<PortCOM>/dev/s3c2410_serial0</PortCOM>\n");
 			sb.append("<BaudRate>9600</BaudRate>\n");
 			sb.append("<HeadCode>1</HeadCode>\n");

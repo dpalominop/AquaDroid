@@ -34,22 +34,22 @@ public class ConfigSoftphone {
 			
 		}
 		ParseXML px = new ParseXML(path, this.filename);
-		this.User = px.getItem(root, "sipUserName");
-		this.Password = px.getItem(root, "sipPassword");
-		this.Domain = px.getItem(root, "sipDomain");
-		this.sipVideo = px.getItem(root, "sipVideo");
+		User = px.getItem(root, "sipUserName", "155");
+		Password = px.getItem(root, "sipPassword", "pwd155");
+		Domain = px.getItem(root, "sipDomain", "192.168.100.15");
+		sipVideo = px.getItem(root, "sipVideo", "1");
 	}
 	
 	public String getUser(){
-		return this.User;
+		return User;
 	}
 	
 	public String getPassword(){
-		return this.Password;
+		return Password;
 	}
 	
 	public String getDomain(){
-		return this.Domain;
+		return Domain;
 	}
 	
 	public Boolean getSipVideo(){

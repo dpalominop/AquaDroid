@@ -20,7 +20,7 @@ public class ParseXML {
 		this.filename = filename;
 		
 	}
-	public String getItem(String root, String field)
+	public String getItem(String root, String field, String value_def)
 	{
 		String data = "";
 		
@@ -46,7 +46,7 @@ public class ParseXML {
 			
 		}catch (Exception e) {
 			//System.out.println("XML Pasing Excpetion = " + e);
-			data = "";
+			data = value_def;
 		}
 		return data;
 	}
