@@ -80,8 +80,6 @@ public class AquaDroid extends Activity {
 	private SoftphoneManager mManager;
 	
 	private DisplayMetrics dm;
-	//private SurfaceView sur_View;
-	//private MediaController media_Controller;
 
 	private String urls[];
 	private String[] list_images;
@@ -106,8 +104,8 @@ public class AquaDroid extends Activity {
     private Config cfg;
     private boolean codestatus = true;
 //    private boolean isPaused = false;
-    STATE aqState = STATE.WELCOME;
-    STATE currentAqState;
+    AQUA_STATE aqState = AQUA_STATE.WELCOME;
+    AQUA_STATE currentAqState;
     private int TableCallerTime = 10;
     Timer callStateTimer = null;
     
@@ -154,10 +152,9 @@ public class AquaDroid extends Activity {
 
         setListUrl();
         
-        setAqState(STATE.WELCOME);
+        setAqState(AQUA_STATE.WELCOME);
 		setState(aqState);
 		launchState(aqState);
-        //SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
 
 		SERVERIP = getLocalIpAddress();
 		
@@ -179,23 +176,23 @@ public class AquaDroid extends Activity {
  
     }
     
-    synchronized public void setAqState(STATE newState){
+    synchronized public void setAqState(AQUA_STATE newState){
     	this.aqState = newState;
     }
     
-    synchronized public void setCurrentAqState(STATE currentState){
+    synchronized public void setCurrentAqState(AQUA_STATE currentState){
     	Log.e("AquaDroid", "Estado actual: " + aqState.toString());
     	this.currentAqState = currentState;
     }
     
-    public enum STATE {
+    public enum AQUA_STATE {
     	WELCOME, CATALOG_PICTURE,
     	CATALOG_VIDEO, BARCODE,
     	TABLE_CALLER, WAIT_RESPONSE,
     	CALL, INCALL
     }
     
-    public void setState(STATE aqState){
+    public void setState(AQUA_STATE aqState){
     	switch(aqState){
     		case WELCOME:
     			welcome.setVisibility(View.VISIBLE);
@@ -312,17 +309,17 @@ public class AquaDroid extends Activity {
     	}
     }
     
-    public void launchState(STATE aqState){
+    public void launchState(AQUA_STATE aqState){
 		setCurrentAqState(aqState);
     	switch(aqState){
 			case WELCOME:
 				stopSlideTimer();
-				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/foreground.jpg"));
+				setWelcomeFile("foreground.jpg");
 				if(cfg.getEnableSlideImages()){
-					setAqState(STATE.CATALOG_PICTURE);
+					setAqState(AQUA_STATE.CATALOG_PICTURE);
 					p=0;
 				}else if(cfg.getEnableSlideVideos()){
-					setAqState(STATE.CATALOG_VIDEO);
+					setAqState(AQUA_STATE.CATALOG_VIDEO);
 				}
 				initSlideTimer(cfg.getTimeSlide(), cfg.getTimeSlide());
 				setImageMainButton("call.png");
@@ -334,9 +331,9 @@ public class AquaDroid extends Activity {
 					if(p >= total_images-1){
 						p = 0;
 						if(cfg.getEnableSlideVideos()){
-							setAqState(STATE.CATALOG_VIDEO);
+							setAqState(AQUA_STATE.CATALOG_VIDEO);
 						}else{
-							setAqState(STATE.WELCOME);
+							setAqState(AQUA_STATE.WELCOME);
 						}
 					}else{
 						p+=1;
@@ -352,7 +349,7 @@ public class AquaDroid extends Activity {
 					v++;
 				}else{
 					v=0;
-					setAqState(STATE.WELCOME);
+					setAqState(AQUA_STATE.WELCOME);
 					setState(this.aqState);
 					launchState(this.aqState);
 				}
@@ -361,21 +358,21 @@ public class AquaDroid extends Activity {
 				
 			case BARCODE:
 				stopSlideTimer();
-				setAqState(STATE.WELCOME);
+				setAqState(AQUA_STATE.WELCOME);
 				initSlideTimer(cfg.getTimeCode(), cfg.getTimeSlide());
 				setImageMainButton("call.png");
 				break;
 				
 			case TABLE_CALLER:
 				stopSlideTimer();
-				setAqState(STATE.WELCOME);
+				setAqState(AQUA_STATE.WELCOME);
 				initSlideTimer(TableCallerTime, cfg.getTimeSlide());
 				setImageMainButton("back.png");
 				break;
 				
 			case WAIT_RESPONSE:
 				stopSlideTimer();
-				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/ringing.jpg"));
+				setWelcomeFile("ringing.jpg");
 				setImageMainButton("hangup.png");
 				break;
 				
@@ -385,7 +382,7 @@ public class AquaDroid extends Activity {
 				break;
 				
 			case INCALL:
-				welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/ringing.jpg"));
+				setWelcomeFile("ringing.jpg");
 				setImageMainButton("answer.png");
 				stopSlideTimer();
 				break;
@@ -399,36 +396,34 @@ public class AquaDroid extends Activity {
     	switch(currentAqState){
     		case WELCOME:
     			stopSlideTimer();
-    			setAqState(STATE.TABLE_CALLER);
+    			setAqState(AQUA_STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
     			break;
     		case CATALOG_PICTURE:
     			stopSlideTimer();
-    			setAqState(STATE.TABLE_CALLER);
+    			setAqState(AQUA_STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
     			break;
 			case CATALOG_VIDEO:
-				//stopSlideTimer();
 				if(videoView.isPlaying()){
     				videoView.stopPlayback();
-    				//videoView.setVisibility(View.INVISIBLE);
     			}
 				v=0;
-				setAqState(STATE.TABLE_CALLER);
+				setAqState(AQUA_STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
 				break;
     		case BARCODE:
     			stopSlideTimer();
-    			setAqState(STATE.TABLE_CALLER);
+    			setAqState(AQUA_STATE.TABLE_CALLER);
     			setState(aqState);
     			launchState(aqState);
     			break;
     		case TABLE_CALLER:
     			stopSlideTimer();
-    			setAqState(STATE.WELCOME);
+    			setAqState(AQUA_STATE.WELCOME);
     			setState(aqState);
     			launchState(aqState);
     			break;
@@ -436,20 +431,20 @@ public class AquaDroid extends Activity {
     		case CALL:
     			mManager.hangOut();
     			stopSlideTimer();
-    			setAqState(STATE.WELCOME);
+    			setAqState(AQUA_STATE.WELCOME);
     			setState(aqState);
     			launchState(aqState);
     			break;
     		case INCALL:
     			mManager.answer();
     			stopSlideTimer();
-    			setAqState(STATE.CALL);
+    			setAqState(AQUA_STATE.CALL);
     			setState(aqState);
     			launchState(aqState);
     			break;
     		default:
     			//stopSlideTimer();
-    			//setAqState(STATE.CATALOG_PICTURE);
+    			//setAqState(AQUA_STATE.CATALOG_PICTURE);
     			//initSlideTimer(0, cfg.getTimeCode());
     			break;
     	}
@@ -458,9 +453,6 @@ public class AquaDroid extends Activity {
     private Runnable softphone_Timer_Tick = new Runnable() {
 		@Override
 		public void run() {
-			//This method runs in the same thread as the UI.    	       
-			//Do something to the UI thread here
-			//Log.e(TAG, "my timer emmit: " + aqState.toString());
 			
 			if(callState != mManager.getCallState()){
 				Log.d("TEST-PREV", mManager.getCallState().toString());
@@ -468,15 +460,15 @@ public class AquaDroid extends Activity {
 				Log.d("TEST-POST", callState.toString());
 				
 				if(callState == State.IncomingReceived){
-					setAqState(STATE.INCALL);
+					setAqState(AQUA_STATE.INCALL);
 					setState(aqState);
 					launchState(aqState);
 				}else if(callState == State.StreamsRunning){
-					setAqState(STATE.CALL);
+					setAqState(AQUA_STATE.CALL);
 					setState(aqState);
 					launchState(aqState);
 				}else if(callState == State.CallReleased){
-					setAqState(STATE.WELCOME);
+					setAqState(AQUA_STATE.WELCOME);
 					setState(aqState);
 					launchState(aqState);
 				}
@@ -485,13 +477,7 @@ public class AquaDroid extends Activity {
 	};
 	
     private void SoftphoneTimerMethod()
-	{
-		//This method is called directly by the timer
-		//and runs in the same thread as the timer.
-
-		//We call the method that will work with the UI
-		//through the runOnUiThread method.
-    	
+	{	
 		this.runOnUiThread(softphone_Timer_Tick);
 	}
     
@@ -503,8 +489,7 @@ public class AquaDroid extends Activity {
 			}
 		};
 		
-		/*use schedule instead of scheduleAtFixedRate to avoid iterate from being call in burst after cpu wake up*/
-		callStateTimer = new Timer("Call STATE");
+		callStateTimer = new Timer("Call AQUA_STATE");
 		callStateTimer.schedule(lTask, 0, 500);
 	}
     
@@ -513,28 +498,10 @@ public class AquaDroid extends Activity {
 		videoView.start();
 	}
     
-    private Bitmap getImageBitmap(String url) {
-        Bitmap bm = null;
-        try {
-            URL aURL = new URL(url);
-            URLConnection conn = aURL.openConnection();
-            conn.connect();
-            InputStream is = conn.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(is);
-            bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            is.close();
-       } catch (IOException e) {
-           Log.e(TAG, "Error getting bitmap", e);
-       }
-       return bm;
-    } 
-    
     @SuppressLint("SetJavaScriptEnabled")
 	private void init_layout_from_cfg(){
     	// Create reference to UI elements
-
-        welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/foreground.jpg"));
+    	setWelcomeFile("foreground.jpg");
         welcome.setVisibility(View.VISIBLE);
         
         if(cfg.getEnableSlideImages()){
@@ -556,23 +523,7 @@ public class AquaDroid extends Activity {
 	            {
 	                // Do whatever u need to do here
 	            	Log.d("player", "playback complete");
-	        		
-
-	        		/*if (videoView != null) {
-	                    mp = null;             
-	                    videoView.stopPlayback();
-	                }*/
-
-	                /*if (v > total_videos - 1) {
-	                    v = 0;
-	                    initSlideTimer(0, cfg.getTimeSlide());
-	                }else{
-	                	playVideo(list_videos[v]);
-	                	v++;
-	                }*/
-	            	
 	            	initSlideTimer(0, cfg.getTimeSlide());
-
 	            }           
 	        });
         }
@@ -614,7 +565,7 @@ public class AquaDroid extends Activity {
             Anexo1.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.WAIT_RESPONSE);
+        			setAqState(AQUA_STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:132@192.168.100.15");
@@ -624,7 +575,7 @@ public class AquaDroid extends Activity {
     		Anexo2.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.WAIT_RESPONSE);
+        			setAqState(AQUA_STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:158@192.168.100.15");
@@ -634,7 +585,7 @@ public class AquaDroid extends Activity {
     		Anexo3.setOnClickListener(new OnClickListener() {
     			public void onClick(View view){
     				stopSlideTimer();
-        			setAqState(STATE.WAIT_RESPONSE);
+        			setAqState(AQUA_STATE.WAIT_RESPONSE);
         			setState(aqState);
         			launchState(aqState);
     				mManager.makeCall("sip:157@192.168.100.15");
@@ -646,18 +597,10 @@ public class AquaDroid extends Activity {
         	MainButton.setVisibility(View.INVISIBLE);
         }
     }
-    
-    private void loadImageFile(String fileName){
-        imageView.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getImageDirectory() + fileName));
-    }
 
 	private Runnable Timer_Tick = new Runnable() {
 		@Override
 		public void run() {
-			//This method runs in the same thread as the UI.    	       
-			//Do something to the UI thread here
-			//Log.e(TAG, "my timer emmit: " + aqState.toString());
-			
 			setState(aqState);
 			launchState(aqState);
 		}
@@ -665,33 +608,8 @@ public class AquaDroid extends Activity {
 	
     private void TimerMethod()
 	{
-		//This method is called directly by the timer
-		//and runs in the same thread as the timer.
-
-		//We call the method that will work with the UI
-		//through the runOnUiThread method.
-    	
 		this.runOnUiThread(Timer_Tick);
 	}
-	
-    private void SlideShow(boolean status, int timecode, int timeslide){
-    	if(status){
-    		MyTimer = new Timer();
-    		MyTimerTask = new TimerTask() {
-    			@Override
-    			public void run() {
-    				TimerMethod();
-    			}
-
-    		};
-    		MyTimer.schedule(MyTimerTask,timecode*1000, timeslide*1000);
-    		
-    	}else{
-    		MyTimerTask.cancel();
-	        MyTimerTask = null;
-	        MyTimer.cancel();
-    	}
-    }
     
     public void initSlideTimer(int delay, int interval){
     	MyTimer = new Timer();
@@ -702,13 +620,12 @@ public class AquaDroid extends Activity {
 			}
 
 		};
-		MyTimer.schedule(MyTimerTask,delay*1000, interval*1000);
+		MyTimer.schedule(MyTimerTask, delay*1000, interval*1000);
     }
     
     public void stopSlideTimer(){
     	if(MyTimerTask!=null){
     		MyTimerTask.cancel();
-    		//MyTimerTask=null;
     	}
     	if(MyTimer != null){
 	        MyTimer.cancel();
@@ -723,7 +640,6 @@ public class AquaDroid extends Activity {
 		File directory = new File(dir);
 
 		if (!directory.isDirectory()) {
-			//System.out.println("Folder not found");
 			return list;
 		}
 
@@ -732,14 +648,10 @@ public class AquaDroid extends Activity {
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return Pattern.matches(".*\\.(jpg|jpeg|gif|png|bmp)", name);
-
-				//return name.endsWith(ext);
 			}
 		};
 		String[] fileNames = directory.list(filter);
 		for (String fileName : fileNames) {
-			//System.out.println(fileName);
-			//list.add(directory+"/"+fileName);
 			list.add(fileName);
 		}
 		return list;
@@ -752,7 +664,6 @@ public class AquaDroid extends Activity {
 		File directory = new File(dir);
 
 		if (!directory.isDirectory()) {
-			//System.out.println("Folder not found");
 			return list;
 		}
 
@@ -761,14 +672,10 @@ public class AquaDroid extends Activity {
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return Pattern.matches(".*\\.(mp4)", name);
-
-				//return name.endsWith(ext);
 			}
 		};
 		String[] fileNames = directory.list(filter);
 		for (String fileName : fileNames) {
-			//System.out.println(fileName);
-			//list.add(directory+"/"+fileName);
 			list.add(fileName);
 		}
 		return list;
@@ -831,7 +738,7 @@ public class AquaDroid extends Activity {
 						    	    	/* Finally, display the content using WebView */
 						    	    	//webView.loadDataWithBaseURL("file://"+directory+"/",html,"text/html","utf-8","");
 						    	    	try{
-						    	    		SlideShow(false,0,0);
+						    	    		stopSlideTimer();
 						    	    		
 						    	    		TcpClient aq = new TcpClient(cfg.getServerIp(),cfg.getServerPort(),10000);
 						    	    		aq.sendData(line);
@@ -844,10 +751,10 @@ public class AquaDroid extends Activity {
 						    	    			webView.loadUrl("file:///"+getFileStreamPath("view.html").toString());
 						    	    	   						    	    			
 						    	    		}
-						    	    		SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
+						    	    		initSlideTimer(cfg.getTimeCode(),cfg.getTimeSlide());
 						    	    		
 						    	    	}catch(Exception e){
-						    	    		SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
+						    	    		initSlideTimer(cfg.getTimeCode(),cfg.getTimeSlide());
 						    	    	}
 			                        }
 			                    });
@@ -898,17 +805,6 @@ public class AquaDroid extends Activity {
         return null;
     }
 	
-	/*@Override
-    protected void onStop() {
-        try {
-             // make sure you close the socket upon exiting
-             serverSocket.close();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-        super.onStop();
-    }*/
-	
     protected void onDataReceived(final byte[] buffer, final int size) {
             runOnUiThread(new Runnable() {
                     public void run() {
@@ -925,7 +821,7 @@ public class AquaDroid extends Activity {
 	                            			if(cfg.getHeadCode() == 1){
 	                            				mReception = mReception.substring(1);
 	                            			}
-	                            			SlideShow(false,0,0);
+	                            			stopSlideTimer();
 							    	    		
 							    	    	TcpClient aq = new TcpClient(cfg.getServerIp(),cfg.getServerPort(),10000);
 							    	    	aq.sendData(mReception);
@@ -941,14 +837,14 @@ public class AquaDroid extends Activity {
 							    	    	   						    	    			
 							    	    		}
 							    	    	}
-							    	    	SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
+							    	    	initSlideTimer(cfg.getTimeCode(),cfg.getTimeSlide());
 							    	    	    	    		
 						    	    		mReception = "";
 						    	    		codestatus=true;
 						    	    		
 						    	    	}catch(Exception e){
 						    	    		Log.e(TAG,"Exception = "+e.toString());
-						    	    		SlideShow(true,cfg.getTimeCode(),cfg.getTimeSlide());
+						    	    		initSlideTimer(cfg.getTimeCode(),cfg.getTimeSlide());
 						    	    		codestatus=true;
 						    	    	}
                             		}
@@ -1028,4 +924,46 @@ public class AquaDroid extends Activity {
     	MainButton.getLayoutParams().width = b.getWidth();
     	MainButton.setPadding(10, 10, 10, 10);
     }
+    
+    private void loadImageFile(String fileName){
+        //imageView.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getImageDirectory() + fileName));
+        Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getImageDirectory() + fileName);
+    	Drawable d = new BitmapDrawable(b);
+        imageView.setBackgroundDrawable(d);
+    }
+    
+    private void setWelcomeFile(String fileName){
+        //welcome.setImageBitmap(getImageBitmap("file://" + cfg.getWorkDirectory() + "/ringing.jpg"));
+        Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+ "/" + fileName);
+    	Drawable d = new BitmapDrawable(b);
+        welcome.setBackgroundDrawable(d);
+    }
+    
+    private Bitmap getImageBitmap(String url) {
+        Bitmap bm = null;
+        try {
+            URL aURL = new URL(url);
+            URLConnection conn = aURL.openConnection();
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+       } catch (IOException e) {
+           Log.e(TAG, "Error getting bitmap", e);
+       }
+       return bm;
+    }
+	
+	/*@Override
+    protected void onStop() {
+        try {
+             // make sure you close the socket upon exiting
+             serverSocket.close();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+        super.onStop();
+    }*/
 }

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<SCRIPT type="text/javascript">
+<!--
+speed=750;
+blink=document.all.tags("blink");
+swi=1;
+bringBackBlinky();
+function bringBackBlinky() {
+if (swi == 1) {
+sho="visible";
+swi=0;
+}
+else {
+sho="hidden";
+swi=1;
+}
+for(i=0;i<blink.length;i++) {
+blink[i].style.visibility=sho;
+}
+setTimeout("bringBackBlinky()", speed);
+}
+// -->
+</SCRIPT>
+</HEAD>
+<BODY>
+<SPAN style="position:absolute;left:250px;top:100px;background-color:red;color:black;font-size:20pt;font-family:arial;font-style:normal;">
+COMPUTADORA PENTIUM IV &#8364
+</SPAN>
+<SPAN style="position:absolute;left:250px;top:230px;background-color:red;color:black;font-size:20pt;font-family:arial;font-style:normal;">
+2.8GHz Disco 30GB
+</SPAN>
+<SPAN style="position:absolute;left:250px;top:350px;background-color:red;color:black;font-size:20pt;font-family:arial;font-style:normal;">
+PRECIO $900
+</SPAN>
+<SPAN style="position:absolute;left:0px;top:100px;">
+<img src="/data/data/org.aquadroid/files/img0.bmp">
+</SPAN>
+<SPAN style="position:absolute;left:250px;top:400px;background-color:red;color:black;font-size:20pt;font-family:arial;font-style:normal;">
+XXXXXX PENTIUM V
+</SPAN>
+</BODY>
+</HTML>
