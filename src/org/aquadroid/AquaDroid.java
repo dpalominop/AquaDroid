@@ -74,6 +74,7 @@ public class AquaDroid extends Activity {
 	private Button Anexo6;
 	private Button Anexo7;
 	private Button Anexo8;
+	private ContactSettings ContSet;
 	private State callState = State.Idle;
 	private GLSurfaceView video;
 	private SurfaceView capture;
@@ -562,35 +563,158 @@ public class AquaDroid extends Activity {
     			}
     		});
             
-            Anexo1.setOnClickListener(new OnClickListener() {
-    			public void onClick(View view){
-    				stopSlideTimer();
-        			setAqState(AQUA_STATE.WAIT_RESPONSE);
-        			setState(aqState);
-        			launchState(aqState);
-    				mManager.makeCall("sip:132@192.168.100.15");
-    			}
-    		});
+            ContSet = new ContactSettings(cfg.getWorkDirectory()+"/"+cfg.getSettingsDirectory());
+            
+            if(ContSet.contacts[0].getEnabled()){
+	            Anexo1.setText(ContSet.contacts[0].getDisplayName());
+	            Anexo1.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[0].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo1.setVisibility(View.INVISIBLE);
+            }
     		
-    		Anexo2.setOnClickListener(new OnClickListener() {
-    			public void onClick(View view){
-    				stopSlideTimer();
-        			setAqState(AQUA_STATE.WAIT_RESPONSE);
-        			setState(aqState);
-        			launchState(aqState);
-    				mManager.makeCall("sip:158@192.168.100.15");
-    			}
-    		});
-    		
-    		Anexo3.setOnClickListener(new OnClickListener() {
-    			public void onClick(View view){
-    				stopSlideTimer();
-        			setAqState(AQUA_STATE.WAIT_RESPONSE);
-        			setState(aqState);
-        			launchState(aqState);
-    				mManager.makeCall("sip:157@192.168.100.15");
-    			}
-    		});
+            if(ContSet.contacts[1].getEnabled()){
+	            Anexo2.setText(ContSet.contacts[1].getDisplayName());
+	            Anexo2.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[1].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo2.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[2].getEnabled()){
+	            Anexo3.setText(ContSet.contacts[2].getDisplayName());
+	            Anexo3.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[2].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo3.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[3].getEnabled()){
+	            Anexo4.setText(ContSet.contacts[3].getDisplayName());
+	            Anexo4.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[3].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo4.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[4].getEnabled()){
+	            Anexo5.setText(ContSet.contacts[4].getDisplayName());
+	            Anexo5.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[4].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo5.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[5].getEnabled()){
+	            Anexo6.setText(ContSet.contacts[5].getDisplayName());
+	            Anexo6.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[5].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo6.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[6].getEnabled()){
+	            Anexo7.setText(ContSet.contacts[6].getDisplayName());
+	            Anexo7.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[6].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo7.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[7].getEnabled()){
+	            Anexo8.setText(ContSet.contacts[7].getDisplayName());
+	            Anexo8.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[7].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo8.setVisibility(View.INVISIBLE);
+            }
+            
+            /*if(ContSet.contacts[8].getEnabled()){
+	            Anexo9.setText(ContSet.contacts[8].getDisplayName());
+	            Anexo9.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[8].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+            }else{
+            	Anexo9.setVisibility(View.INVISIBLE);
+            }
+            
+            if(ContSet.contacts[0].getEnabled()){
+	            Anexo10.setText(ContSet.contacts[0].getDisplayName());
+	            Anexo10.setOnClickListener(new OnClickListener() {
+	    			public void onClick(View view){
+	    				stopSlideTimer();
+	        			setAqState(AQUA_STATE.WAIT_RESPONSE);
+	        			setState(aqState);
+	        			launchState(aqState);
+	    				mManager.makeCall("sip:"+ContSet.contacts[9].getUsername()+"@192.168.100.15");
+	    			}
+	    		});
+    		}else{
+            	Anexo1.setVisibility(View.INVISIBLE);
+            }
+    		*/
     		
     		startCallStatetTimer();
         }else{

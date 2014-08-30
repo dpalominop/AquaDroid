@@ -45,10 +45,8 @@ public class ParseXML {
 			}
 			
 		}catch (Exception e) {
-			//System.out.println("XML Pasing Excpetion = " + e);
 			data = value_def;
 		}
 		return data;
 	}
-	
 }
