@@ -1,6 +1,5 @@
 package org.aquadroid;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,7 +53,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	
 	private String identity = "sip:155@192.168.100.15";
 	private String password = "pwd155";
-	private ConfigSoftphone cfg_soft;
+	private SoftphoneSettings soft_set;
 	
 	public SoftphoneManager(Context c, GLSurfaceView video, SurfaceView capture, Config cfg) {
 		mContext = c;
@@ -62,11 +61,11 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		
 		try {
 			String basePath = cfg.getWorkDirectory()+"/"+cfg.getSoundsDirectory();
-			copyAssetsFromPackage(basePath);
+			//copyAssetsFromPackage(basePath);
 			mInstance = this;
-			cfg_soft = new ConfigSoftphone(cfg.getWorkDirectory()+"/"+cfg.getSettingsDirectory());
-			identity = "sip:"+cfg_soft.getUser()+"@"+cfg_soft.getDomain();
-			password = cfg_soft.getPassword();
+			soft_set = new SoftphoneSettings(cfg.getWorkDirectory()+"/"+cfg.getSettingsDirectory());
+			identity = "sip:"+soft_set.getUser()+"@"+soft_set.getDomain();
+			password = soft_set.getPassword();
 			
 			mLinphoneCore = LinphoneCoreFactory.instance().createLinphoneCore(this, mContext);
 		
@@ -145,7 +144,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			androidVideoWindowImpl.init();
 			
 		} catch (LinphoneCoreException e) {
-		} catch (IOException e) {
 		}
 		
 	}
@@ -258,7 +256,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		mLinphoneCore.setVideoDevice(camId);
 	}
 	
-	private void copyAssetsFromPackage(String basePath) throws IOException {
+	/*private void copyAssetsFromPackage(String basePath) throws IOException {
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.oldphone_mono, basePath + "/oldphone_mono.wav");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.ringback, basePath + "/ringback.wav");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.toy_mono, basePath + "/toy_mono.wav");
@@ -266,7 +264,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		//SoftphoneUtils.copyFromPackage(mContext, R.raw.linphonerc_factory, new File(basePath + "/linphonerc").getName());
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.lpconfig, basePath + "/lpconfig.xsd");
 		SoftphoneUtils.copyIfNotExist(mContext, R.raw.rootca, basePath + "/rootca.pem");
-	}
+	}*/
 
 	@Override
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {

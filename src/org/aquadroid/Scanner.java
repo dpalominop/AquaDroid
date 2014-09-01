@@ -19,10 +19,7 @@ package org.aquadroid;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidParameterException;
-
-
 //import android.content.SharedPreferences;
-import org.aquadroid.SerialPort;
 //import android.serialport.SerialPortFinder;
 
 //public class Application extends android.app.Application {

@@ -5,11 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 
 @SuppressLint("SdCardPath")
-public class ConfigSoftphone {
+public class SoftphoneSettings {
 	private static final String TAG = "CONFIG";
 	private String root = "sipRegistration";
 	private String User = "155";
@@ -19,7 +20,7 @@ public class ConfigSoftphone {
 	private String filename = "softphone.xml";
 	private String path = "/sdcard/AquaDROID/settings/";
 	
-	public ConfigSoftphone(String path)
+	public SoftphoneSettings(String path)
 	{	
 		this.path = path;
 		try{
