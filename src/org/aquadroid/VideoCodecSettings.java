@@ -38,7 +38,7 @@ public class VideoCodecSettings {
 			
 		}
 		
-		codecs = new VideoCodec[9];
+		codecs = new VideoCodec[7];
 		ParseVideoCodecs px = new ParseVideoCodecs(path, filename);
 		px.getVideoCodecs();
 	}
@@ -164,14 +164,18 @@ public class VideoCodecSettings {
 		public void setName(String name) {
 			Name = name;
 		}
-		public String getRate() {
-			return Rate;
+		public int getRate() {
+			return Integer.parseInt(Rate);
 		}
 		public void setRate(String rate) {
 			Rate = rate;
 		}
-		public String getEnabled() {
-			return Enabled;
+		public Boolean getEnabled() {
+			if(Enabled.compareTo("1")==0){
+				return true;
+			}else{
+				return false;
+			}
 		}
 		public void setEnabled(String enabled) {
 			Enabled = enabled;

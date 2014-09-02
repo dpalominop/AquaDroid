@@ -5,12 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 
@@ -21,11 +24,11 @@ public class AudioCodecSettings {
 	private String filename = "audiocodecs.xml";
 	private String path = "/sdcard/AquaDROID/settings/";
 	
-	public AudioCodecSettings(String path)
+	public AudioCodecSettings(String PATH)
 	{	
-		this.path = path;
+		this.path = PATH;
 		try{
-			FileInputStream fis = new FileInputStream(new File(this.path, filename));
+			FileInputStream fis = new FileInputStream(new File(path, filename));
 			fis.close();
 		}catch(FileNotFoundException e){
 			Log.e(TAG, "Create Config = "+ e);
@@ -35,7 +38,7 @@ public class AudioCodecSettings {
 			
 		}
 		
-		codecs = new AudioCodec[9];
+		codecs = new AudioCodec[6];
 		ParseAudioCodecs px = new ParseAudioCodecs(path, filename);
 		px.getAudioCodecs();
 	}
@@ -190,20 +193,28 @@ public class AudioCodecSettings {
 		public void setName(String name) {
 			Name = name;
 		}
-		public String getRate() {
-			return Rate;
+		public int getRate() {
+			return Integer.parseInt(Rate);
 		}
 		public void setRate(String rate) {
 			Rate = rate;
 		}
-		public String getChannel() {
-			return Channel;
+		public int getChannel() {
+			if(Channel.compareTo("mono")==0){
+				return 1;
+			}else{
+				return 2;
+			}
 		}
 		public void setChannel(String channel) {
 			Channel = channel;
 		}
-		public String getEnabled() {
-			return Enabled;
+		public Boolean getEnabled() {
+			if(Enabled.compareTo("1")==0){
+				return true;
+			}else{
+				return false;
+			}
 		}
 		public void setEnabled(String enabled) {
 			Enabled = enabled;

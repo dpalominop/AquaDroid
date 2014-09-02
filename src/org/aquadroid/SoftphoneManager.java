@@ -55,6 +55,9 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	private String password = "pwd155";
 	private SoftphoneSettings soft_set;
 	
+	private AudioCodecSettings Audio;
+	private VideoCodecSettings Video;
+	
 	public SoftphoneManager(Context c, GLSurfaceView video, SurfaceView capture, Config cfg) {
 		mContext = c;
 		LinphoneCoreFactory.instance().setDebugMode(true, "Linphone Mini");
@@ -99,10 +102,18 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			mLinphoneCore.setMaxCalls(1);
 			
 			LinphoneCodecDisable(0,-1);
-			LinphoneCodecEnable(0, 4);
-			LinphoneCodecEnable(0, 5);
+			//LinphoneCodecEnable(0, 4);
+			//LinphoneCodecEnable(0, 5);
+			Audio = new AudioCodecSettings(cfg.getWorkDirectory()+ "/" +cfg.getSettingsDirectory());
+			for(int i=0; i< Audio.codecs.length; i++){
+				LinphoneCodecEnable(Audio.codecs[i].getName(), Audio.codecs[i].getRate(), Audio.codecs[i].getChannel(), Audio.codecs[i].getEnabled());
+			}
 			LinphoneCodecDisable(1,-1);
-			LinphoneCodecEnable(1, 1);
+			//LinphoneCodecEnable(1, 1);
+			Video = new VideoCodecSettings(cfg.getWorkDirectory()+ "/" +cfg.getSettingsDirectory());
+			for(int i=0; i< Video.codecs.length; i++){
+				LinphoneCodecEnable(Video.codecs[i].getName(), Video.codecs[i].getRate(), Video.codecs[i].getEnabled());
+			}
 			
 			setUserAgent();
 			setFrontCamAsDefault();
@@ -148,6 +159,12 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		
 	}
 	
+	private void fixZOrder(SurfaceView video, SurfaceView preview) {
+		video.setZOrderOnTop(false);
+		preview.setZOrderOnTop(true);
+		preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
+	}
+	
 	public void LinphoneCodecList(int type, Map<String, Integer> CodecList){
 		PayloadType[] pt;
 		int index;
@@ -181,10 +198,39 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		}
 	}
 	
-	private void fixZOrder(SurfaceView video, SurfaceView preview) {
-		video.setZOrderOnTop(false);
-		preview.setZOrderOnTop(true);
-		preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
+	public void LinphoneCodecEnable(String mime, int clockrate, int channels, Boolean flag){
+		PayloadType pt = mLinphoneCore.findPayloadType(mime, clockrate, channels);
+		try{
+			mLinphoneCore.enablePayloadType(pt, flag);
+			if(flag){
+				Log.d("CODEC: " + "mime_type: " + mime + " ,clock: " + clockrate + "channels: " + channels + " ENABLED");
+			}else{
+				Log.d("CODEC: " + "mime_type: " + mime + " ,clock: " + clockrate + "channels: " + channels + " DISABLED");
+			}
+		}catch(LinphoneCoreException e){
+			
+		}catch(Exception e){
+			
+		}
+
+	}
+	
+	public void LinphoneCodecEnable(String mime, int clockrate, Boolean flag) throws LinphoneCoreException{
+		PayloadType pt = mLinphoneCore.findPayloadType(mime, clockrate);
+		
+		try{
+			mLinphoneCore.enablePayloadType(pt, flag);
+			if(flag){
+				Log.d("CODEC: " + "mime_type: " + mime + " ,clock: " + clockrate + " ENABLED");
+			}else{
+				Log.d("CODEC: " + "mime_type: " + mime + " ,clock: " + clockrate + " DISABLED");
+			}
+		}catch(LinphoneCoreException e){
+			
+		}catch(Exception e){
+			
+		}
+
 	}
 	
 	public void LinphoneCodecDisable(int type, int sel_index) throws LinphoneCoreException{
