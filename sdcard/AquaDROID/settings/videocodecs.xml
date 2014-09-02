@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<codecs>
+<codec id="0" enabled="0">
+<name>VP8</name>
+<clock>90000</clock>
+</codec>
+<codec id="1" enabled="0">
+<name>H263</name>
+<clock>90000</clock>
+</codec>
+<codec id="2" enabled="0">
+<name>H263-1998</name>
+<clock>90000</clock>
+</codec>
+<codec id="3" enabled="1">
+<name>H264</name>
+<clock>90000</clock>
+</codec>
+<codec id="4" enabled="0">
+<name>MP4V-ES</name>
+<clock>90000</clock>
+</codec>
+<codec id="5" enabled="0">
+<name>theora</name>
+<clock>90000</clock>
+</codec>
+<codec id="6" enabled="0">
+<name>x-snow</name>
+<clock>90000</clock>
+</codec>
+</codecs>

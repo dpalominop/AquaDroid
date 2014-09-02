@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contacts>
+<contact id="1" enabled="1">
+<firstname>RAYON</firstname>
+<surname>JARDIN</surname>
+<phone>132</phone>
+</contact>
+<contact id="2" enabled="0">
+<firstname>RAYON</firstname>
+<surname>AUTO BRICO</surname>
+<phone>155</phone>
+</contact>
+<contact id="3" enabled="0">
+<firstname>HABILLEMENT</firstname>
+<surname></surname>
+<phone>158</phone>
+</contact>
+<contact id="4" enabled="1">
+<firstname>RAYON</firstname>
+<surname>JOUET</surname>
+<phone>157</phone>
+</contact>
+<contact id="5" enabled="0">
+<firstname>EPICERIE</firstname>
+<surname>SUCREE</surname>
+<phone>3421</phone>
+</contact>
+<contact id="6" enabled="0">
+<firstname>RAYON</firstname>
+<surname>BOUCHERIE</surname>
+<phone>3481</phone>
+</contact>
+<contact id="7" enabled="0">
+<firstname>RAYON</firstname>
+<surname>BAGAGES</surname>
+<phone>3407</phone>
+</contact>
+<contact id="8" enabled="0">
+<firstname>RAYON</firstname>
+<surname>LIQUIDES</surname>
+<phone>3415</phone>
+</contact>
+<contact id="9" enabled="0">
+<firstname>EPICERIE</firstname>
+<surname>SALEE</surname>
+<phone>3421</phone>
+</contact>
+<contact id="10" enabled="0">
+<firstname>CHARCUTERIE</firstname>
+<surname></surname>
+<phone>3478</phone>
+</contact>
+</contacts>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<codecs>
+<codec id="0" enabled="0">
+<name>speex</name>
+<clock>8000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="1" enabled="0">
+<name>speex</name>
+<clock>16000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="2" enabled="0">
+<name>speex</name>
+<clock>32000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="3" enabled="0">
+<name>GSM</name>
+<clock>8000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="4" enabled="0">
+<name>PCMU</name>
+<clock>8000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="5" enabled="1">
+<name>PCMA</name>
+<clock>8000</clock>
+<channel>mono</channel>
+</codec>
+<codec id="6" enabled="0">
+<name>L16</name>
+<clock>44100</clock>
+<channel>mono</channel>
+</codec>
+<codec id="7" enabled="0">
+<name>L16</name>
+<clock>44100</clock>
+<channel>stereo</channel>
+</codec>
+<codec id="8" enabled="0">
+<name>G722</name>
+<clock>8000</clock>
+<channel>mono</channel>
+</codec>
+</codecs>
