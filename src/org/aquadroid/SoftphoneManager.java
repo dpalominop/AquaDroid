@@ -1,6 +1,5 @@
 package org.aquadroid;
 
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +52,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	
 	private String identity = "sip:155@192.168.100.15";
 	private String password = "pwd155";
-	private SoftphoneSettings soft_set;
+	private SoftphoneSettings soft_set = null;
 	
 	private AudioCodecSettings Audio;
 	private VideoCodecSettings Video;
@@ -93,35 +92,45 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			
 			mLinphoneCore.setContext(mContext);
 			mLinphoneCore.setRing(basePath + "/oldphone_mono.wav");
-			mLinphoneCore.setRootCA(basePath + "/rootca.pem");
+			//mLinphoneCore.setRootCA(basePath + "/rootca.pem");
 			mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
-			//mLinphoneCore.setChatDatabasePath(basePath + "/linphone-history.db");
 			
 			int availableCores = Runtime.getRuntime().availableProcessors();
 			mLinphoneCore.setCpuCount(availableCores);
 			mLinphoneCore.setMaxCalls(1);
 			
-			LinphoneCodecDisable(0,-1);
-			//LinphoneCodecEnable(0, 4);
-			//LinphoneCodecEnable(0, 5);
+			LinphoneDisableAllCodecs("AUDIO");
 			Audio = new AudioCodecSettings(cfg.getWorkDirectory()+ "/" +cfg.getSettingsDirectory());
 			for(int i=0; i< Audio.codecs.length; i++){
-				LinphoneCodecEnable(Audio.codecs[i].getName(), Audio.codecs[i].getRate(), Audio.codecs[i].getChannel(), Audio.codecs[i].getEnabled());
+				LinphoneEnableCodec(Audio.codecs[i].getName(), Audio.codecs[i].getRate(), Audio.codecs[i].getChannel(), Audio.codecs[i].getEnabled());
 			}
-			LinphoneCodecDisable(1,-1);
-			//LinphoneCodecEnable(1, 1);
-			Video = new VideoCodecSettings(cfg.getWorkDirectory()+ "/" +cfg.getSettingsDirectory());
-			for(int i=0; i< Video.codecs.length; i++){
-				LinphoneCodecEnable(Video.codecs[i].getName(), Video.codecs[i].getRate(), Video.codecs[i].getEnabled());
+			
+			mLinphoneCore.setMicrophoneGain((float) 0);
+			
+			if(soft_set.getSipVideo()){
+				LinphoneDisableAllCodecs("VIDEO");
+				Video = new VideoCodecSettings(cfg.getWorkDirectory()+ "/" +cfg.getSettingsDirectory());
+				for(int i=0; i< Video.codecs.length; i++){
+					LinphoneEnableCodec(Video.codecs[i].getName(), Video.codecs[i].getRate(), Video.codecs[i].getEnabled());
+				}
 			}
 			
 			setUserAgent();
-			setFrontCamAsDefault();
+			if(soft_set.getSipVideo()){
+				setFrontCamAsDefault();
+			}
 			startIterate();
+			
 	        mLinphoneCore.setNetworkReachable(true); // Let's assume it's true
-	        mLinphoneCore.enableVideo(true, true);
-	        mLinphoneCore.setVideoPolicy(true, true);
 	        
+	        if(soft_set.getSipVideo()){
+		        mLinphoneCore.enableVideo(true, true);
+		        mLinphoneCore.setVideoPolicy(true, true);
+	        }else{
+	        	mLinphoneCore.enableVideo(false, false);
+		        mLinphoneCore.setVideoPolicy(false, false);
+	        }
+		        
 	        mVideoView = video;
 	        mCaptureView = capture;
 	        androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView);
@@ -153,10 +162,9 @@ public class SoftphoneManager implements LinphoneCoreListener {
 				}
 			});
 			androidVideoWindowImpl.init();
-			
+				
 		} catch (LinphoneCoreException e) {
 		}
-		
 	}
 	
 	private void fixZOrder(SurfaceView video, SurfaceView preview) {
@@ -165,40 +173,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
 	}
 	
-	public void LinphoneCodecList(int type, Map<String, Integer> CodecList){
-		PayloadType[] pt;
-		int index;
-		
-		if(type==0){
-			pt = mLinphoneCore.getAudioCodecs();
-		}else{
-			pt = mLinphoneCore.getVideoCodecs();
-		}
-		for(index=0; index<pt.length; index++){
-			String CodecName = pt[index].getMime()+"/"+pt[index].getRate();
-			CodecList.put(CodecName, index);
-		}
-	}
-	
-	public void LinphoneCodecEnable(int type, int sel_index) throws LinphoneCoreException{
-		PayloadType[] pt;
-		int index;
-		
-		if(type==0){
-			pt = mLinphoneCore.getAudioCodecs();
-		}else{
-			pt = mLinphoneCore.getVideoCodecs();
-		}
-		
-		for(index=0; index<pt.length; index++){
-			if(index==sel_index || sel_index==-1){
-				mLinphoneCore.enablePayloadType(pt[index], true);
-				Log.d("index: "+Integer.toString(index) +", mime_type: "+pt[index].getMime(), " ENABLED");
-			}
-		}
-	}
-	
-	public void LinphoneCodecEnable(String mime, int clockrate, int channels, Boolean flag){
+	public void LinphoneEnableCodec(String mime, int clockrate, int channels, Boolean flag){
 		PayloadType pt = mLinphoneCore.findPayloadType(mime, clockrate, channels);
 		try{
 			mLinphoneCore.enablePayloadType(pt, flag);
@@ -215,7 +190,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 
 	}
 	
-	public void LinphoneCodecEnable(String mime, int clockrate, Boolean flag) throws LinphoneCoreException{
+	public void LinphoneEnableCodec(String mime, int clockrate, Boolean flag) throws LinphoneCoreException{
 		PayloadType pt = mLinphoneCore.findPayloadType(mime, clockrate);
 		
 		try{
@@ -233,20 +208,54 @@ public class SoftphoneManager implements LinphoneCoreListener {
 
 	}
 	
-	public void LinphoneCodecDisable(int type, int sel_index) throws LinphoneCoreException{
+	public void LinphoneEnableAllCodecs(String TypeCodec){
 		PayloadType[] pt;
 		int index;
 		
-		if(type==0){
+		if(TypeCodec.compareToIgnoreCase("AUDIO")==0){
 			pt = mLinphoneCore.getAudioCodecs();
-		}else{
+			for(index=0; index<pt.length; index++){
+				try {
+					mLinphoneCore.enablePayloadType(pt[index], true);
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+			}
+		}else if(TypeCodec.compareToIgnoreCase("VIDEO")==0){
 			pt = mLinphoneCore.getVideoCodecs();
+			for(index=0; index<pt.length; index++){
+				try {
+					mLinphoneCore.enablePayloadType(pt[index], true);
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+			}
 		}
+	}
+	
+	public void LinphoneDisableAllCodecs(String TypeCodec){
+		PayloadType[] pt;
+		int index;
 		
-		for(index=0; index<pt.length; index++){
-			if(index==sel_index || sel_index==-1){
-				mLinphoneCore.enablePayloadType(pt[index], false);
-				Log.d("index: "+Integer.toString(index) +", mime_type: "+pt[index].getMime(), " DISABLED");
+		if(TypeCodec.compareToIgnoreCase("AUDIO")==0){
+			pt = mLinphoneCore.getAudioCodecs();
+			for(index=0; index<pt.length; index++){
+				try {
+					mLinphoneCore.enablePayloadType(pt[index], false);
+				} catch (LinphoneCoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}else if(TypeCodec.compareToIgnoreCase("VIDEO")==0){
+			pt = mLinphoneCore.getVideoCodecs();
+			for(index=0; index<pt.length; index++){
+				try {
+					mLinphoneCore.enablePayloadType(pt[index], false);
+				} catch (LinphoneCoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -479,6 +488,14 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		
 		if(mLinphoneCall.getState()==LinphoneCall.State.IncomingReceived){
 			mLinphoneCore.acceptCall(mLinphoneCall);
+		}
+	}
+	
+	public Boolean getSipVideoEnabled(){
+		try{
+			return soft_set.getSipVideo();
+		}catch(Exception e){
+			return false;
 		}
 	}
 }
