@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AquaDroid>
-<WorkingDirectory>/sdcard/AquaDROID/</WorkingDirectory>
-<ImageDirectory>slideshow_images/</ImageDirectory>
-<VideoDirectory>slideshow_videos/</VideoDirectory>
+<WorkingDirectory>/sdcard/AquaDROID</WorkingDirectory>
+<ImageDirectory>slideshow_images</ImageDirectory>
+<VideoDirectory>slideshow_videos</VideoDirectory>
 <PortCOM>/dev/s3c2410_serial0</PortCOM>
 <BaudRate>9600</BaudRate>
 <HeadCode>1</HeadCode>

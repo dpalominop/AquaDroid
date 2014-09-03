@@ -125,7 +125,7 @@ public class AquaDroid extends Activity {
         
         ctx = getApplicationContext();
         cfg = new Config(ctx);
-        Log.e(TAG,"slide path ="+cfg.getWorkDirectory()+cfg.getImageDirectory());
+        Log.e(TAG,"slide path ="+cfg.getWorkDirectory()+"/"+cfg.getImageDirectory());
         
         MainButton = (Button) findViewById(R.id.MainButton);
         welcome = (ImageView) findViewById(R.id.welcome);
@@ -476,7 +476,7 @@ public class AquaDroid extends Activity {
 					setNextAqState(AQUA_STATE.CALL);
 					setState(nextAqState);
 					launchState(nextAqState);
-				}else if(callState == State.CallReleased){
+				}else if(callState == State.CallEnd || callState == State.CallReleased){
 					setNextAqState(AQUA_STATE.WELCOME);
 					setState(nextAqState);
 					launchState(nextAqState);
@@ -503,7 +503,7 @@ public class AquaDroid extends Activity {
 	}
     
 	public void playVideo(String video) {
-		videoView.setVideoPath(cfg.getWorkDirectory()+cfg.getVideoDirectory() + "/" + video);
+		videoView.setVideoPath(cfg.getWorkDirectory()+"/"+cfg.getVideoDirectory() + "/" + video);
 		videoView.start();
 	}
     
@@ -514,7 +514,7 @@ public class AquaDroid extends Activity {
         welcome.setVisibility(View.VISIBLE);
         
         if(cfg.getEnableSlideImages()){
-	        List<String> slide = listFileImagesByExt(cfg.getWorkDirectory()+cfg.getImageDirectory());
+	        List<String> slide = listFileImagesByExt(cfg.getWorkDirectory()+"/"+cfg.getImageDirectory());
 	        list_images = (String[]) slide.toArray(new String[0]);
 	        total_images = list_images.length;
         }
@@ -522,7 +522,7 @@ public class AquaDroid extends Activity {
         
         if(cfg.getEnableSlideVideos()){
     		
-        	List<String> slide = listFileVideosByExt(cfg.getWorkDirectory()+cfg.getVideoDirectory());
+        	List<String> slide = listFileVideosByExt(cfg.getWorkDirectory()+"/"+cfg.getVideoDirectory());
 	        list_videos = (String[]) slide.toArray(new String[0]);
 	        total_videos = list_videos.length;
 
@@ -1047,7 +1047,7 @@ public class AquaDroid extends Activity {
     }
  
     private void setImageMainButton(String fileName){
-    	Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getButtonDirectory()+ "/" + fileName);
+    	Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+"/"+cfg.getButtonDirectory()+ "/" + fileName);
     	Drawable d = new BitmapDrawable(b);
     	MainButton.setBackgroundDrawable(d);
     	MainButton.getLayoutParams().height = b.getHeight();
@@ -1056,7 +1056,7 @@ public class AquaDroid extends Activity {
     }
     
     private void loadImageFile(String fileName){
-        Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+cfg.getImageDirectory() + fileName);
+        Bitmap b = getImageBitmap("file://" + cfg.getWorkDirectory()+"/"+cfg.getImageDirectory() +"/"+ fileName);
     	Drawable d = new BitmapDrawable(b);
         imageView.setBackgroundDrawable(d);
     }

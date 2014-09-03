@@ -91,9 +91,11 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			mLinphoneCore.setDefaultProxyConfig(proxyCfg);
 			
 			mLinphoneCore.setContext(mContext);
-			mLinphoneCore.setRing(basePath + "/oldphone_mono.wav");
+			mLinphoneCore.setRing(basePath + "/ringback.wav");
+			Log.d("WAV PATH: " + basePath + "/ringback.wav");
 			//mLinphoneCore.setRootCA(basePath + "/rootca.pem");
 			mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
+			Log.d("WAV PATH: " + basePath + "/toy_mono.wav");
 			
 			int availableCores = Runtime.getRuntime().availableProcessors();
 			mLinphoneCore.setCpuCount(availableCores);

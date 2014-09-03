@@ -20,11 +20,11 @@ public class Config {
 	private int serverport;
 	private int timecode;
 	private int timeslide;
-	private String work_directory = "/sdcard/AquaDROID/";
-	private String image_directory = "slideshow_images/";
-	private String video_directory = "slideshow_videos/";
-	private String button_directory = "button_images/";
-	private String sounds_directory = "sounds/";
+	private String work_directory = "/sdcard/AquaDROID";
+	private String image_directory = "slideshow_images";
+	private String video_directory = "slideshow_videos";
+	private String button_directory = "button_images";
+	private String sounds_directory = "sounds";
 	private String portcom = "/dev/s3c2410_serial0";
 	private int baudrate = 9600;
 	private int headcode = 1;
@@ -49,10 +49,10 @@ public class Config {
 		work_directory = px.getItem(root, "WorkingDirectory", "/sdcard/AquaDROID/");
 		Log.i(TAG, "directory: " + work_directory);
 		
-		image_directory = px.getItem(root, "ImageDirectory", "slideshow_images/");
-		video_directory = px.getItem(root, "VideoDirectory", "slideshow_videos/");
-		button_directory = px.getItem(root, "ButtonDirectory", "button_images/");
-		sounds_directory = px.getItem(root, "SoundsDirectory", "sounds/");
+		image_directory = px.getItem(root, "ImageDirectory", "slideshow_images");
+		video_directory = px.getItem(root, "VideoDirectory", "slideshow_videos");
+		button_directory = px.getItem(root, "ButtonDirectory", "button_images");
+		sounds_directory = px.getItem(root, "SoundsDirectory", "sounds");
 		
 		portcom = px.getItem(root, "PortCOM", "/dev/s3c2410_serial0");
 		baudrate = Integer.parseInt(px.getItem(root, "BaudRate", "9600"));
@@ -150,9 +150,9 @@ public class Config {
 
 			sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 			sb.append("<AquaDroid>\n");
-			sb.append("<WorkingDirectory>/sdcard/AquaDROID/</WorkingDirectory>\n");
-			sb.append("<ImageDirectory>slideshow_images/</ImageDirectory>\n");
-			sb.append("<VideoDirectory>slideshow_videos/</VideoDirectory>\n");
+			sb.append("<WorkingDirectory>/sdcard/AquaDROID</WorkingDirectory>\n");
+			sb.append("<ImageDirectory>slideshow_images</ImageDirectory>\n");
+			sb.append("<VideoDirectory>slideshow_videos</VideoDirectory>\n");
 			sb.append("<PortCOM>/dev/s3c2410_serial0</PortCOM>\n");
 			sb.append("<BaudRate>9600</BaudRate>\n");
 			sb.append("<HeadCode>1</HeadCode>\n");
