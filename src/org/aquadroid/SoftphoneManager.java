@@ -91,8 +91,10 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			mLinphoneCore.setDefaultProxyConfig(proxyCfg);
 			
 			mLinphoneCore.setContext(mContext);
-			mLinphoneCore.setRing(basePath + "/ringback.wav");
-			Log.d("WAV PATH: " + basePath + "/ringback.wav");
+			mLinphoneCore.setRing(basePath + "/toy_mono.wav");
+			//mLinphoneCore.setPlaybackGain(0);
+			//mLinphoneCore.setPlayLevel(100);
+			Log.d("WAV PATH: " + basePath + "/toy_mono.wav");
 			//mLinphoneCore.setRootCA(basePath + "/rootca.pem");
 			mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
 			Log.d("WAV PATH: " + basePath + "/toy_mono.wav");
@@ -107,7 +109,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 				LinphoneEnableCodec(Audio.codecs[i].getName(), Audio.codecs[i].getRate(), Audio.codecs[i].getChannel(), Audio.codecs[i].getEnabled());
 			}
 			
-			mLinphoneCore.setMicrophoneGain((float) 0);
+			mLinphoneCore.setMicrophoneGain(-10);
+			mLinphoneCore.setPlaybackGain(-10);
 			
 			if(soft_set.getSipVideo()){
 				LinphoneDisableAllCodecs("VIDEO");
