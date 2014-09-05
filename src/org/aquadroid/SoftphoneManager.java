@@ -112,8 +112,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			mLinphoneCore.setDefaultProxyConfig(proxyCfg);
 			
 			mLinphoneCore.setContext(mContext);
-			mLinphoneCore.setRing(RING);
-			mLinphoneCore.setPlayFile(RING);
+			//mLinphoneCore.setRing(RING);
+			//mLinphoneCore.setPlayFile(RING);
 			
 			int availableCores = Runtime.getRuntime().availableProcessors();
 			mLinphoneCore.setCpuCount(availableCores);
@@ -346,6 +346,7 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			Log.d("INICIO RING: " + RINGBACK);
 		}else if(callState == State.IncomingReceived){
 			sound.start();
+			
 		}else{
 			try{
 				if(sound.isPlaying()){
