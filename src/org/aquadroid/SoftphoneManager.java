@@ -33,6 +33,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -56,18 +57,36 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	
 	private AudioCodecSettings Audio;
 	private VideoCodecSettings Video;
-	
+	private String RINGBACK;
+	private String RING;
+	private MediaPlayer sound;
+
 	public SoftphoneManager(Context c, GLSurfaceView video, SurfaceView capture, Config cfg) {
 		mContext = c;
 		LinphoneCoreFactory.instance().setDebugMode(true, "Linphone Mini");
 		
 		try {
 			String basePath = cfg.getWorkDirectory()+"/"+cfg.getSoundsDirectory();
-			//copyAssetsFromPackage(basePath);
 			mInstance = this;
 			soft_set = new SoftphoneSettings(cfg.getWorkDirectory()+"/"+cfg.getSettingsDirectory());
 			identity = "sip:"+soft_set.getUser()+"@"+soft_set.getDomain();
 			password = soft_set.getPassword();
+			RINGBACK = basePath+"/toy_mono.wav";
+			RING = basePath+"/toy_mono.wav";
+			sound = new MediaPlayer();
+			try {
+				sound.setDataSource(RINGBACK);
+				sound.prepare();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			sound.setOnCompletionListener(new MediaPlayer.OnCompletionListener() 
+	        {           
+	            public void onCompletion(MediaPlayer mp) 
+	            {
+            		mp.start();
+	            }           
+	        });
 			
 			mLinphoneCore = LinphoneCoreFactory.instance().createLinphoneCore(this, mContext);
 		
@@ -84,6 +103,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 
 			LinphoneProxyConfig proxyCfg;
 			proxyCfg = LinphoneCoreFactory.instance().createProxyConfig(identity, domain, null, true);
+			//proxyCfg = mLinphoneCore.createProxyConfig(identity, domain, null, true);
+			
 			proxyCfg.setExpires(2000);
 			proxyCfg.setProxy(domain);
 			
@@ -91,13 +112,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			mLinphoneCore.setDefaultProxyConfig(proxyCfg);
 			
 			mLinphoneCore.setContext(mContext);
-			mLinphoneCore.setRing(basePath + "/toy_mono.wav");
-			//mLinphoneCore.setPlaybackGain(0);
-			//mLinphoneCore.setPlayLevel(100);
-			Log.d("WAV PATH: " + basePath + "/toy_mono.wav");
-			//mLinphoneCore.setRootCA(basePath + "/rootca.pem");
-			mLinphoneCore.setPlayFile(basePath + "/toy_mono.wav");
-			Log.d("WAV PATH: " + basePath + "/toy_mono.wav");
+			mLinphoneCore.setRing(RING);
+			mLinphoneCore.setPlayFile(RING);
 			
 			int availableCores = Runtime.getRuntime().availableProcessors();
 			mLinphoneCore.setCpuCount(availableCores);
@@ -109,8 +125,8 @@ public class SoftphoneManager implements LinphoneCoreListener {
 				LinphoneEnableCodec(Audio.codecs[i].getName(), Audio.codecs[i].getRate(), Audio.codecs[i].getChannel(), Audio.codecs[i].getEnabled());
 			}
 			
-			mLinphoneCore.setMicrophoneGain(-10);
-			mLinphoneCore.setPlaybackGain(-10);
+			mLinphoneCore.setMicrophoneGain(-5);
+			//mLinphoneCore.setPlaybackGain(0);
 			
 			if(soft_set.getSipVideo()){
 				LinphoneDisableAllCodecs("VIDEO");
@@ -248,7 +264,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 				try {
 					mLinphoneCore.enablePayloadType(pt[index], false);
 				} catch (LinphoneCoreException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -258,7 +273,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 				try {
 					mLinphoneCore.enablePayloadType(pt[index], false);
 				} catch (LinphoneCoreException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -315,16 +329,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		}
 		mLinphoneCore.setVideoDevice(camId);
 	}
-	
-	/*private void copyAssetsFromPackage(String basePath) throws IOException {
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.oldphone_mono, basePath + "/oldphone_mono.wav");
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.ringback, basePath + "/ringback.wav");
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.toy_mono, basePath + "/toy_mono.wav");
-		//SoftphoneUtils.copyIfNotExist(mContext, R.raw.linphonerc_default, basePath + "/.linphonerc");
-		//SoftphoneUtils.copyFromPackage(mContext, R.raw.linphonerc_factory, new File(basePath + "/linphonerc").getName());
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.lpconfig, basePath + "/lpconfig.xsd");
-		SoftphoneUtils.copyIfNotExist(mContext, R.raw.rootca, basePath + "/rootca.pem");
-	}*/
 
 	@Override
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {
@@ -336,6 +340,30 @@ public class SoftphoneManager implements LinphoneCoreListener {
 			String message) {
 		Log.d("Call state: " + cstate + "(" + message + ")");
 		callState = cstate;
+		if(callState == State.OutgoingRinging){
+			sound.start();
+
+			Log.d("INICIO RING: " + RINGBACK);
+		}else if(callState == State.IncomingReceived){
+			sound.start();
+		}else{
+			try{
+				if(sound.isPlaying()){
+					sound.pause();
+					
+					sound.reset();
+					try {
+						sound.setDataSource(RINGBACK);
+						sound.prepare();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			
+			}catch(Exception e){
+				Log.d("ERORRRR DE RINGBACK");
+			}
+		}
 	}
 	
 	public State getCallState(){
@@ -464,7 +492,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 	@Override
 	public void authInfoRequested(LinphoneCore lc, String realm,
 			String username, String Domain) {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -472,7 +499,6 @@ public class SoftphoneManager implements LinphoneCoreListener {
 		try {
 			mLinphoneCore.invite(uri);
 		} catch (LinphoneCoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
